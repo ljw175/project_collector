@@ -1,0 +1,48 @@
+/* 스토리 패널 컴포넌트 스타일 */
+.story-panel {
+  background-color: var(--bg-panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--spacing-md);
+  height: 280px;
+  overflow-y: auto;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.story-message {
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.story-message:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.story-message.success {
+  color: var(--clr-success);
+}
+
+.story-message.warning {
+  color: #ff9800;
+}
+
+.story-message.error {
+  color: var(--clr-error);
+}
+
+.item-link {
+  color: var(--clr-accent);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--trans);
+  display: inline-block;
+}
+
+.item-link:hover {
+  transform: translateY(-1px);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,125 @@
+/* 아이템 슬롯 컴포넌트 스타일 */
+.item-slot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  padding: var(--spacing-xs);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform var(--trans), box-shadow var(--trans);
+  overflow: hidden;
+}
+
+.item-slot:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  z-index: 2;
+}
+
+.item-slot.selected {
+  border: 2px solid var(--clr-accent);
+}
+
+.item-slot.appraised {
+  background-color: var(--bg-card);
+}
+
+.category-icon {
+  width: 24px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+/* 카테고리별 아이콘 */
+.category-weapon {
+  background-image: url('../../assets/icons/weapon.svg');
+}
+
+.category-jewelry {
+  background-image: url('../../assets/icons/jewelry.svg');
+}
+
+.category-art {
+  background-image: url('../../assets/icons/art.svg');
+}
+
+.category-book {
+  background-image: url('../../assets/icons/book.svg');
+}
+
+.category-household {
+  background-image: url('../../assets/icons/household.svg');
+}
+
+.category-material {
+  background-image: url('../../assets/icons/material.svg');
+}
+
+.item-name {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  margin-bottom: var(--spacing-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stack-count {
+  position: absolute;
+  bottom: var(--spacing-xs);
+  right: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 0 var(--spacing-xs);
+  border-radius: calc(var(--radius) / 2);
+}
+
+.item-tag-preview {
+  position: absolute;
+  top: var(--spacing-xs);
+  right: var(--spacing-xs);
+}
+
+.tag-chip {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.tag-chip.tag-common {
+  background-color: var(--rarity-common);
+}
+
+.tag-chip.tag-uncommon {
+  background-color: var(--rarity-uncommon);
+}
+
+.tag-chip.tag-rare {
+  background-color: var(--rarity-rare);
+}
+
+.tag-chip.tag-epic {
+  background-color: var(--rarity-epic);
+}
+
+.tag-chip.tag-legendary {
+  background-color: var(--rarity-legendary);
+}
+
+.item-value {
+  position: absolute;
+  bottom: var(--spacing-xs);
+  left: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--clr-accent);
+  font-weight: 700;
+}

@@ -1,0 +1,71 @@
+/* 메인 애플리케이션 레이아웃 스타일 */
+.app-container {
+  max-width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+
+.app-header {
+  height: 60px;
+  padding: 0 var(--spacing-md);
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--clr-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--clr-accent);
+}
+
+.player-stats {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.stat {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.app-content {
+  flex: 1;
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+}
+
+.action-panel {
+  margin-bottom: var(--spacing-md);
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.inventory-preview {
+  background-color: var(--bg-panel);
+  border-radius: var(--radius);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow);
+}
+
+.inventory-preview h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-md);
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: var(--spacing-sm);
+}

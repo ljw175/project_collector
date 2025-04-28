@@ -1,0 +1,59 @@
+/* 태그 디스플레이 컴포넌트 스타일 */
+.tag-display {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: calc(var(--radius) / 2);
+  font-size: var(--font-size-xs);
+  background-color: var(--bg-card);
+  margin-right: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+  user-select: none;
+  cursor: pointer;
+  transition: transform var(--trans), box-shadow var(--trans);
+}
+
+.tag-display:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.tag-common {
+  background-color: var(--rarity-common);
+  color: white;
+}
+
+.tag-uncommon {
+  background-color: var(--rarity-uncommon);
+  color: white;
+}
+
+.tag-rare {
+  background-color: var(--rarity-rare);
+  color: white;
+}
+
+.tag-epic {
+  background-color: var(--rarity-epic);
+  color: white;
+}
+
+.tag-legendary {
+  background-color: var(--rarity-legendary);
+  color: white;
+}
+
+.tag-hidden {
+  background-color: #777;
+  color: #eee;
+}
+
+.tag-name {
+  font-weight: 600;
+}
+
+.tag-multiplier {
+  margin-left: var(--spacing-xs);
+  font-size: 0.85em;
+  opacity: 0.9;
+}
