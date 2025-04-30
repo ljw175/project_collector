@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { GameProvider } from './store/gameContext';
 import './styles/global.css';
 import './App.css';
@@ -8,6 +9,16 @@ import { Item, ItemCategory } from './models/item';
 import StoryPanel from './components/ui/StoryPanel';
 import TagPopup from './features/appraisal/components/TagPopup';
 import ItemSlot from './components/ui/ItemSlot';
+
+// 라우트 컴포넌트
+import MainNav from './routes/MainNav';
+import CollectionTest from './routes/CollectionTest';
+import AppraisalTest from './routes/AppraisalTest';
+import InventoryTest from './routes/InventoryTest';
+import MapTest from './routes/MapTest';
+import CalendarTest from './routes/CalendarTest';
+import AuctionTest from './routes/AuctionTest';
+import ExpertiseTest from './routes/ExpertiseTest';
 
 function App() {
   const [showTagPopup, setShowTagPopup] = useState(false);
@@ -97,50 +108,67 @@ function App() {
     setShowTagPopup(false);
   };
 
+  // 메인 게임 화면 컴포넌트
+  const MainGameScreen = () => (
+    <div className="app-container">
+      <header className="app-header">
+        <h1>Collector</h1>
+        <div className="player-stats">
+          <div className="stat">💰 500G</div>
+          <div className="stat">👑 명성 0</div>
+          <div className="stat">❤️ 100/100</div>
+        </div>
+      </header>
+      
+      <main className="app-content">
+        <StoryPanel 
+          messages={testMessages} 
+          onItemClick={handleItemClick} 
+        />
+        
+        <div className="action-panel">
+          <div className="action-buttons">
+            <button className="btn">살펴보기</button>
+            <button className="btn">대화하기</button>
+            <button className="btn btn-primary">물건 구매</button>
+            <button className="btn">떠나기</button>
+          </div>
+        </div>
+        
+        <div className="inventory-preview">
+          <h3>인벤토리</h3>
+          <div className="inventory-grid">
+            <ItemSlot item={testItem} count={1} />
+            {/* 추가 아이템 슬롯 */}
+          </div>
+        </div>
+      </main>
+      
+      {showTagPopup && selectedItem && (
+        <TagPopup 
+          item={selectedItem} 
+          onClose={handleClosePopup}
+          onAppraise={handleAppraise}
+        />
+      )}
+    </div>
+  );
+
   return (
     <GameProvider>
-      <div className="app-container">
-        <header className="app-header">
-          <h1>Collector</h1>
-          <div className="player-stats">
-            <div className="stat">💰 500G</div>
-            <div className="stat">👑 명성 0</div>
-            <div className="stat">❤️ 100/100</div>
-          </div>
-        </header>
-        
-        <main className="app-content">
-          <StoryPanel 
-            messages={testMessages} 
-            onItemClick={handleItemClick} 
-          />
-          
-          <div className="action-panel">
-            <div className="action-buttons">
-              <button className="btn">살펴보기</button>
-              <button className="btn">대화하기</button>
-              <button className="btn btn-primary">물건 구매</button>
-              <button className="btn">떠나기</button>
-            </div>
-          </div>
-          
-          <div className="inventory-preview">
-            <h3>인벤토리</h3>
-            <div className="inventory-grid">
-              <ItemSlot item={testItem} count={1} />
-              {/* 추가 아이템 슬롯 */}
-            </div>
-          </div>
-        </main>
-        
-        {showTagPopup && selectedItem && (
-          <TagPopup 
-            item={selectedItem} 
-            onClose={handleClosePopup}
-            onAppraise={handleAppraise}
-          />
-        )}
-      </div>
+      <Router>
+        <Routes>
+          <Route path="/dev" element={<MainNav />} />
+          <Route path="/collection-test" element={<CollectionTest />} />
+          <Route path="/appraisal-test" element={<AppraisalTest />} />
+          <Route path="/inventory-test" element={<InventoryTest />} />
+          <Route path="/map-test" element={<MapTest />} />
+          <Route path="/calendar-test" element={<CalendarTest />} />
+          <Route path="/auction-test" element={<AuctionTest />} />
+          <Route path="/expertise-test" element={<ExpertiseTest />} />
+          <Route path="/" element={<MainGameScreen />} />
+        </Routes>
+      </Router>
     </GameProvider>
   );
 }

@@ -42,6 +42,7 @@ export interface AppraisedItem extends BaseItem {
   isAppraised: true;
   actualValue: number;    // 실제 가치 (감정 후)
   condition: number;      // 상태 (0-100)
+  hiddenTags: ItemTag[];  // 감정된 숨겨진 태그들
   history?: string;       // 아이템 이력
 }
 
