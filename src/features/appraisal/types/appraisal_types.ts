@@ -1,7 +1,8 @@
 /**
  * 감정(Appraisal) 관련 타입 정의
  */
-import { ItemTag } from '@models/item';
+import { ExpertiseLevel } from '@/models';
+import { ItemCategory, ItemTag } from '@models/item';
 
 // 감정 결과 타입
 export interface AppraisalResult {
@@ -16,8 +17,24 @@ export interface AppraisalResult {
 // 감정 옵션 타입
 export interface AppraisalOptions {
   thoroughness: 'quick' | 'standard' | 'thorough'; // 감정의 꼼꼼함 정도
-  focusArea?: 'condition' | 'authenticity' | 'history'; // 집중 영역
-  useSpecialTool?: boolean; // 특수 도구 사용 여부
+  focusArea: 'condition' | 'authenticity' | 'history'; // 집중 영역
+  playerExpertise: ExpertiseLevel; // 플레이어 전문성 (0-100)
+  useSpecialTool: boolean; // 특수 도구 사용 여부
+  tool: AppraisalTool['name']; // 사용할 도구
+}
+
+export interface AppraisalTool {
+  id: string; // 도구 고유 ID
+  name: string; // 도구 이름
+  description: string; // 도구 설명
+  maxDurability: number; // 전체 내구도
+  currentDurability: number; // 현재 내구도
+  timeMultiplier: number; // 소요 시간 배수
+  accuracyBonus: number; // 정확도 보너스
+  durabilityCost: number; // 내구도 소모량
+  specialEffect: string; // 특수 효과 설명
+  bestCategories: ItemCategory[]; // 가장 효과적인 카테고리
+  tagsExpose: ItemTag[]; // 이 도구를 사용하여 감정했을때 노출되는 태그
 }
 
 // 감정 과정 상태

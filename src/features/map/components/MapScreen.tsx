@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { useMap } from '../hooks/useMap';
 import { useGameState } from '@store/gameContext';
-import { LocationType, LocationActivity, TravelCost } from '../types/map_types';
+import { LocationType, LocationActivity, TravelCost, Location } from '../types/map_types';
 
 // 위치 유형 아이콘 매핑
 const locationTypeIcons: Record<LocationType, string> = {
@@ -14,6 +14,7 @@ const locationTypeIcons: Record<LocationType, string> = {
   [LocationType.WORKSHOP]: '🔨',
   [LocationType.LIBRARY]: '📚',
   [LocationType.COLLECTOR]: '🧐',
+  [LocationType.COLLECTION_SITE]: '📦',
   [LocationType.SPECIAL]: '✨'
 };
 
@@ -194,28 +195,31 @@ const LocationInfoPanel: React.FC<{
 const MapScreen: React.FC = () => {
   const { state } = useGameState();
   const { 
-    mapState, 
+    locations,
     currentLocation,
     selectedLocation,
     activeEvents,
+    currentDay,
     isLoading,
-    showTravelModal,
-    travelCost,
     
-    loadMapData,
-    selectLocation,
-    toggleMarkLocation,
-    travelToLocation,
-    setShowTravelModal
+    setSelectedLocationId,
+    setShowTravelModal,
+    travelTo,
+    calculateTravelCost,
+    getEventsByLocation
   } = useMap();
+  
+  // 마킹된 위치 ID
+  const [markedLocationId, setMarkedLocationId] = useState<string | null>(null);
+  
+  // 이동 모달 표시 여부 상태
+  const [showTravelConfirm, setShowTravelConfirm] = useState(false);
+  
+  // 이동 비용 상태
+  const [activeTravelCost, setActiveTravelCost] = useState<TravelCost | null>(null);
   
   // 활성 이벤트 맵
   const [locationEventMap, setLocationEventMap] = useState<Record<string, boolean>>({});
-  
-  // 컴포넌트 마운트 시 데이터 로드
-  useEffect(() => {
-    loadMapData();
-  }, [loadMapData]);
   
   // 활성 이벤트 맵 업데이트
   useEffect(() => {
@@ -228,26 +232,53 @@ const MapScreen: React.FC = () => {
     setLocationEventMap(newEventMap);
   }, [activeEvents]);
   
+  // 위치 선택 처리
+  const handleSelectLocation = (locationId: string) => {
+    setSelectedLocationId(locationId);
+    
+    // 위치를 선택했을 때 여행 비용 계산
+    const cost = calculateTravelCost(locationId);
+    setActiveTravelCost(cost);
+    
+    // 선택한 위치가 현재 위치가 아니라면 여행 확인 모달 표시
+    if (currentLocation && currentLocation.id !== locationId) {
+      setShowTravelConfirm(true);
+    }
+  };
+  
+  // 위치 마킹 토글
+  const toggleMarkLocation = (locationId: string) => {
+    if (markedLocationId === locationId) {
+      setMarkedLocationId(null);
+    } else {
+      setMarkedLocationId(locationId);
+    }
+  };
+  
   // 이동 처리
   const handleTravel = () => {
     if (selectedLocation) {
-      travelToLocation(selectedLocation.id);
+      const result = travelTo(selectedLocation.id);
+      
+      // 이동 성공 시 모달 닫기
+      if (result.success) {
+        setShowTravelConfirm(false);
+      }
     }
   };
   
   // 이동 취소
   const handleCancelTravel = () => {
-    setShowTravelModal(false);
+    setShowTravelConfirm(false);
   };
   
   // 선택된 위치의 이벤트
   const selectedLocationEvents = selectedLocation
-    ? activeEvents
-        .filter(event => event.locationId === selectedLocation.id)
+    ? getEventsByLocation(selectedLocation.id)
         .map(event => ({
           title: event.title,
           description: event.description,
-          duration: event.duration - (state.currentDay - event.startDay)
+          duration: event.duration - (currentDay - event.startDay)
         }))
     : [];
   
@@ -271,9 +302,9 @@ const MapScreen: React.FC = () => {
         </div>
         
         <div className="map-markers">
-          {mapState.locations
-            .filter(location => location.isDiscovered)
-            .map(location => (
+          {locations
+            .filter((location: Location) => location.isDiscovered)
+            .map((location: Location) => (
               <LocationMarker 
                 key={location.id}
                 id={location.id}
@@ -281,11 +312,11 @@ const MapScreen: React.FC = () => {
                 type={location.type}
                 x={location.coordinates.x}
                 y={location.coordinates.y}
-                isCurrentLocation={location.id === mapState.currentLocationId}
-                isMarked={location.id === mapState.markedLocationId}
+                isCurrentLocation={currentLocation ? location.id === currentLocation.id : false}
+                isMarked={location.id === markedLocationId}
                 isAccessible={location.isAccessible}
                 hasActiveEvent={!!locationEventMap[location.id]}
-                onSelect={selectLocation}
+                onSelect={handleSelectLocation}
                 onMark={toggleMarkLocation}
               />
             ))}
@@ -303,11 +334,11 @@ const MapScreen: React.FC = () => {
         />
       )}
       
-      {showTravelModal && selectedLocation && travelCost && (
+      {showTravelConfirm && selectedLocation && activeTravelCost && (
         <TravelConfirmModal 
           locationName={selectedLocation.name}
-          cost={travelCost}
-          playerMoney={state.player.money}
+          cost={activeTravelCost}
+          playerMoney={state.player.money || 0}
           onConfirm={handleTravel}
           onCancel={handleCancelTravel}
         />

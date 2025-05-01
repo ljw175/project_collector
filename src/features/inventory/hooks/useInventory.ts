@@ -5,109 +5,22 @@ import { useState, useMemo, useCallback } from 'react';
 import { useGameState } from '@store/gameContext';
 import { Item, isAppraised } from '@models/item';
 import { InventoryFilter, InventorySortOption } from '../types/inventory_types';
+import { inventoryService } from '@/services/inventory';
 
 export function useInventory() {
   const { state, dispatch } = useGameState();
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
-  const [filter, setFilter] = useState<InventoryFilter>({});
+  const [filter, setFilter] = useState<InventoryFilter>({ searchText: '', categories: [], isAppraised: false, minValue: 0, maxValue: 0, tags: [] });
   const [sortOption, setSortOption] = useState<InventorySortOption>('recent');
 
-  // 인벤토리 아이템 필터링
+  // 인벤토리 아이템 필터링 - 서비스 사용
   const filteredItems = useMemo(() => {
-    let result = [...state.inventory];
-
-    // 텍스트 검색
-    if (filter.searchText) {
-      const searchLower = filter.searchText.toLowerCase();
-      result = result.filter(item => 
-        item.name.toLowerCase().includes(searchLower) || 
-        item.description.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // 카테고리 필터
-    if (filter.categories && filter.categories.length > 0) {
-      result = result.filter(item => 
-        filter.categories?.includes(item.category)
-      );
-    }
-
-    // 감정 상태 필터
-    if (filter.isAppraised !== undefined) {
-      result = result.filter(item => 
-        item.isAppraised === filter.isAppraised
-      );
-    }
-
-    // 가치 범위 필터
-    if (filter.minValue !== undefined || filter.maxValue !== undefined) {
-      result = result.filter(item => {
-        const value = isAppraised(item) ? item.actualValue : item.baseValue;
-        
-        if (filter.minValue !== undefined && value < filter.minValue) {
-          return false;
-        }
-        
-        if (filter.maxValue !== undefined && value > filter.maxValue) {
-          return false;
-        }
-        
-        return true;
-      });
-    }
-
-    // 태그 필터
-    if (filter.tags && filter.tags.length > 0) {
-      result = result.filter(item => 
-        item.tags.some(tag => filter.tags?.includes(tag.id))
-      );
-    }
-
-    return result;
+    return inventoryService.filterItems(state.inventory, filter);
   }, [state.inventory, filter]);
 
-  // 아이템 정렬
+  // 아이템 정렬 - 서비스 사용
   const sortedItems = useMemo(() => {
-    const items = [...filteredItems];
-
-    switch (sortOption) {
-      case 'name-asc':
-        return items.sort((a, b) => a.name.localeCompare(b.name));
-      
-      case 'name-desc':
-        return items.sort((a, b) => b.name.localeCompare(a.name));
-      
-      case 'value-asc':
-        return items.sort((a, b) => {
-          const valueA = isAppraised(a) ? a.actualValue : a.baseValue;
-          const valueB = isAppraised(b) ? b.actualValue : b.baseValue;
-          return valueA - valueB;
-        });
-      
-      case 'value-desc':
-        return items.sort((a, b) => {
-          const valueA = isAppraised(a) ? a.actualValue : a.baseValue;
-          const valueB = isAppraised(b) ? b.actualValue : b.baseValue;
-          return valueB - valueA;
-        });
-      
-      case 'category':
-        return items.sort((a, b) => a.category.localeCompare(b.category));
-      
-      case 'quantity':
-        return items.sort((a, b) => b.quantity - a.quantity);
-      
-      case 'appraised':
-        return items.sort((a, b) => {
-          if (a.isAppraised === b.isAppraised) return 0;
-          return a.isAppraised ? -1 : 1;
-        });
-      
-      case 'recent':
-      default:
-        // 여기서는 ID로 정렬 (실제로는 획득 시간 필드가 있을 수 있음)
-        return items.sort((a, b) => b.id.localeCompare(a.id));
-    }
+    return inventoryService.sortItems(filteredItems, sortOption);
   }, [filteredItems, sortOption]);
 
   // 아이템 선택
@@ -146,7 +59,7 @@ export function useInventory() {
 
   // 필터 초기화
   const resetFilter = useCallback(() => {
-    setFilter({});
+    setFilter({ searchText: '', categories: [], isAppraised: false, minValue: 0, maxValue: 0, tags: [] });
   }, []);
 
   // 정렬 옵션 설정
@@ -161,8 +74,16 @@ export function useInventory() {
 
   // 아이템 추가 (수집 시)
   const addItem = useCallback((item: Item) => {
+    // 인벤토리 용량 확인
+    if (inventoryService.isInventoryFull(state.inventory)) {
+      // 용량 초과 시 처리 로직 (실제 구현에서는 알림 등이 필요)
+      console.warn('인벤토리 용량 초과');
+      return false;
+    }
+    
     dispatch({ type: 'ADD_ITEM', payload: item });
-  }, [dispatch]);
+    return true;
+  }, [dispatch, state.inventory]);
 
   // 아이템 제거 (판매 시)
   const removeItem = useCallback((itemId: string) => {
@@ -179,8 +100,28 @@ export function useInventory() {
 
   // 아이템 감정
   const appraiseItem = useCallback((itemId: string) => {
-    dispatch({ type: 'APPRAISE_ITEM', payload: itemId });
+    const item = state.inventory.find(item => item.id === itemId);
+    if (!item || item.isAppraised) return;
+
+    dispatch({ type: 'APPRAISE_ITEM', payload: { itemId, discoveredTags: [], actualValue: 0, condition: 0, tool: 'none' } });
   }, [dispatch]);
+  
+  // 인벤토리 총 가치 계산
+  const totalValue = useMemo(() => {
+    return inventoryService.calculateTotalValue(state.inventory);
+  }, [state.inventory]);
+  
+  // 카테고리별 통계
+  const categoryStats = useMemo(() => {
+    return inventoryService.getCategoryStats(state.inventory);
+  }, [state.inventory]);
+  
+  // 인벤토리 용량 정보
+  const inventoryCapacity = useMemo(() => {
+    const total = state.inventory.reduce((count, item) => count + item.quantity, 0);
+    const limit = inventoryService.getInventoryCapacityLimit('basic');
+    return { total, limit, isFull: total >= limit };
+  }, [state.inventory]);
 
   return {
     // 데이터
@@ -189,6 +130,9 @@ export function useInventory() {
     selectedItemIds,
     filter,
     sortOption,
+    totalValue,
+    categoryStats,
+    inventoryCapacity,
     
     // 아이템 관리 함수
     addItem,
@@ -207,5 +151,8 @@ export function useInventory() {
     updateFilter,
     resetFilter,
     updateSortOption,
+    
+    // 서비스 접근
+    service: inventoryService
   };
 }

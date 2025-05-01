@@ -1,16 +1,17 @@
 /**
  * 전문성(Expertise) 기능을 위한 커스텀 훅
  */
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useGameState } from '@store/gameContext';
 import { ItemCategory } from '@models/item';
-import { ExpertiseLevel, Reputation } from '@models/player';
+import { ExpertiseLevel } from '@models/player';
 import { 
   ExpertiseSkill, 
   ReputationEvent,
   ExpertiseState,
   ExperienceSource 
 } from '../types/expertise_types';
+import { expertiseService } from '@/services/expertise';
 
 export function useExpertise() {
   const { state, dispatch } = useGameState();
@@ -23,6 +24,9 @@ export function useExpertise() {
     pendingEvents: [],
     activeSkillId: null
   });
+  
+  // 플레이어 경험치 추적
+  const [experience, setExperience] = useState(0);
   
   // 선택된 스킬 ID
   const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
@@ -40,6 +44,39 @@ export function useExpertise() {
   // 로딩 상태
   const [isLoading, setIsLoading] = useState(false);
 
+  // 전문성 데이터 로드
+  const loadExpertiseData = useCallback(() => {
+    setIsLoading(true);
+    
+    // 중앙화된 데이터 서비스에서 데이터 로드
+    const skills = expertiseService.getAllSkills();
+    const contacts = expertiseService.getUnlockedContacts();
+    
+    // 초기 플레이어 경험치 설정
+    setExperience(state.player.experience || 0);
+    
+    // 초기 언락된 카테고리 설정 (게임 진행에 따라 달라질 수 있음)
+    const unlockedCategories = [ItemCategory.WEAPON, ItemCategory.ART];
+    
+    // 사용 가능한 이벤트 로드
+    const availableEvents = expertiseService.getAvailableEvents();
+    
+    setExpertiseState({
+      skills,
+      unlockedCategories,
+      contacts,
+      pendingEvents: availableEvents,
+      activeSkillId: skills.length > 0 ? skills[0].id : null
+    });
+    
+    setIsLoading(false);
+  }, [state.player.experience]);
+
+  // 컴포넌트 마운트 시 데이터 로드
+  useEffect(() => {
+    loadExpertiseData();
+  }, [loadExpertiseData]);
+
   // 선택된 스킬
   const selectedSkill = useMemo(() => {
     if (!selectedSkillId) return null;
@@ -51,123 +88,6 @@ export function useExpertise() {
     if (!selectedContactId) return null;
     return expertiseState.contacts.find(contact => contact.id === selectedContactId) || null;
   }, [expertiseState.contacts, selectedContactId]);
-
-  // 전문성 데이터 로드
-  const loadExpertiseData = useCallback(() => {
-    setIsLoading(true);
-    
-    // 실제 구현에서는 여기서 저장된 데이터를 불러오거나 초기 설정
-    // 예시 데이터 생성
-    const mockSkills: ExpertiseSkill[] = [
-      {
-        id: 'appraisal-weapon',
-        name: '무기 감정',
-        description: '무기 아이템의 가치와 특성을 더 정확하게 파악합니다.',
-        category: ItemCategory.WEAPON,
-        level: ExpertiseLevel.BEGINNER,
-        bonus: {
-          appraisalAccuracy: 10,
-          valueIncrease: 5,
-          sellingPriceBonus: 5,
-          purchasePriceDiscount: 0,
-          repairQuality: 0,
-          discoveryChance: 0
-        }
-      },
-      {
-        id: 'appraisal-art',
-        name: '예술품 감정',
-        description: '예술품과 골동품의 진위와 가치를 더 정확하게 판단합니다.',
-        category: ItemCategory.ART,
-        level: ExpertiseLevel.BEGINNER,
-        bonus: {
-          appraisalAccuracy: 10,
-          valueIncrease: 5,
-          sellingPriceBonus: 5,
-          purchasePriceDiscount: 0,
-          repairQuality: 0,
-          discoveryChance: 0
-        }
-      },
-      {
-        id: 'repair-jewelry',
-        name: '보석 세공',
-        description: '보석과 귀금속 아이템을 복원하고 가치를 높입니다.',
-        category: ItemCategory.JEWELRY,
-        level: ExpertiseLevel.BEGINNER,
-        bonus: {
-          appraisalAccuracy: 0,
-          valueIncrease: 10,
-          sellingPriceBonus: 0,
-          purchasePriceDiscount: 0,
-          repairQuality: 10,
-          discoveryChance: 0
-        }
-      }
-    ];
-    
-    const mockContacts: Reputation[] = [
-      {
-        id: 'smith',
-        name: '대장장이 마이클',
-        description: '무기와 갑옷에 전문 지식을 가진 대장장이',
-        level: 1,
-        relationshipLevel: 0,
-        faction: '',
-        specialties: [ItemCategory.WEAPON, ItemCategory.JEWELRY],
-        buyingBonus: 0,
-        sellingBonus: 0,
-        unlockThreshold: 100,
-        isUnlocked: true,
-        category: ItemCategory.WEAPON,
-        location: 'forge',
-        services: ['repair', 'appraisal', 'trade'],
-        reputationScore: 0,
-        nextLevelThreshold: 100
-      },
-      {
-        id: 'art-dealer',
-        name: '화상 엘리자베스',
-        description: '예술품과 골동품을 다루는 대가',
-        level: 1,
-        relationshipLevel: 0,
-        faction: '',
-        specialties: [ItemCategory.ART],
-        buyingBonus: 0,
-        sellingBonus: 0,
-        unlockThreshold: 100,
-        isUnlocked: true,
-        category: ItemCategory.ART,
-        location: 'gallery',
-        services: ['appraisal', 'trade'],
-        reputationScore: 0,
-        nextLevelThreshold: 100
-      }
-    ];
-    
-    const mockEvents: ReputationEvent[] = [
-      {
-        id: 'event1',
-        contactId: 'smith',
-        title: '대장장이의 부탁',
-        description: '마이클이 특별한 광석을 찾고 있습니다. 도와주면 감사하겠다고 합니다.',
-        requirementsMet: true,
-        reputationGain: 20,
-        rewardType: 'skill',
-        rewardId: 'repair-weapon'
-      }
-    ];
-    
-    setExpertiseState({
-      skills: mockSkills,
-      unlockedCategories: [ItemCategory.WEAPON, ItemCategory.ART],
-      contacts: mockContacts,
-      pendingEvents: mockEvents,
-      activeSkillId: mockSkills[0].id
-    });
-    
-    setIsLoading(false);
-  }, []);
 
   // 스킬 선택
   const selectSkill = useCallback((skillId: string) => {
@@ -185,31 +105,45 @@ export function useExpertise() {
       ...prev,
       activeSkillId: skillId
     }));
-    // 실제 구현에서는 여기서 게임 상태 업데이트도 필요
   }, []);
 
-  // 스킬 레벨업 가능 여부 확인
-  const canLevelUpSkill = useCallback((skillId: string): boolean => {
-    const skill = expertiseState.skills.find(s => s.id === skillId);
+  // 스킬 획득
+  const acquireSkill = useCallback((skillId: string): boolean => {
+    const skill = expertiseService.getSkillById(skillId);
     if (!skill) return false;
     
-    // 레벨별 필요 경험치 계산 (실제 구현에서는 더 복잡할 수 있음)
-    const requiredExp = skill.level * 100;
+    // 이미 보유한 스킬인지 확인
+    if (expertiseState.skills.some(s => s.id === skillId)) {
+      return false;
+    }
     
-    // 플레이어 경험치 확인 (실제 구현에서는 특정 카테고리별 경험치가 필요할 수 있음)
-    const playerExperience = state.player.experience;
+    // 스킬 추가
+    setExpertiseState(prev => ({
+      ...prev,
+      skills: [...prev.skills, skill]
+    }));
     
-    return playerExperience >= requiredExp;
-  }, [expertiseState.skills, state.player.experience]);
+    return true;
+  }, [expertiseState.skills]);
 
-  // 스킬 레벨업
-  const levelUpSkill = useCallback((skillId: string): boolean => {
-    if (!canLevelUpSkill(skillId)) return false;
+  // 스킬 업그레이드 가능 여부 확인
+  const canUpgradeSkill = useCallback((skillId: string, targetLevel: ExpertiseLevel): boolean => {
+    const skill = expertiseState.skills.find(s => s.id === skillId);
+    if (!skill) return false;
+    
+    return expertiseService.canUpgradeSkill(skill, targetLevel, experience);
+  }, [expertiseState.skills, experience]);
+
+  // 스킬 업그레이드
+  const upgradeSkill = useCallback((skillId: string, targetLevel: ExpertiseLevel): boolean => {
+    // 업그레이드 가능 여부 확인
+    if (!canUpgradeSkill(skillId, targetLevel)) return false;
     
     const skill = expertiseState.skills.find(s => s.id === skillId);
     if (!skill) return false;
     
-    const requiredExp = skill.level * 100;
+    // 필요 경험치 계산
+    const requiredExp = expertiseService.calculateUpgradeCost(targetLevel);
     
     // 스킬 레벨 업데이트
     setExpertiseState(prev => ({
@@ -218,7 +152,7 @@ export function useExpertise() {
         s.id === skillId 
           ? { 
               ...s, 
-              level: (s.level + 1) as ExpertiseLevel,
+              level: targetLevel,
               bonus: {
                 ...s.bonus,
                 appraisalAccuracy: (s.bonus.appraisalAccuracy || 0) + 5,
@@ -230,7 +164,10 @@ export function useExpertise() {
       )
     }));
     
-    // 경험치 소모
+    // 경험치 차감
+    setExperience(prev => prev - requiredExp);
+    
+    // 경험치 소모 디스패치
     dispatch({ 
       type: 'UPDATE_EXPERIENCE', 
       payload: { 
@@ -241,7 +178,22 @@ export function useExpertise() {
     });
     
     return true;
-  }, [canLevelUpSkill, expertiseState.skills, dispatch]);
+  }, [canUpgradeSkill, expertiseState.skills, dispatch]);
+
+  // 경험치 추가
+  const addExperience = useCallback((amount: number): void => {
+    setExperience(prev => prev + amount);
+    
+    // 경험치 추가 디스패치
+    dispatch({ 
+      type: 'UPDATE_EXPERIENCE', 
+      payload: { 
+        amount, 
+        category: 'general', 
+        source: 'manualAdd' 
+      } 
+    });
+  }, [dispatch]);
 
   // 연락처 호감도 증가
   const increaseContactFavor = useCallback((contactId: string, amount: number): boolean => {
@@ -266,7 +218,7 @@ export function useExpertise() {
         
         return {
           ...c,
-          favorPoints: newFavorPoints,
+          reputationScore: newFavorPoints,
           level: newLevel,
           nextLevelThreshold: newThreshold
         };
@@ -289,6 +241,9 @@ export function useExpertise() {
     ]);
     
     // 경험치 추가
+    setExperience(prev => prev + amount);
+    
+    // 경험치 디스패치
     dispatch({ 
       type: 'UPDATE_EXPERIENCE', 
       payload: { 
@@ -312,9 +267,7 @@ export function useExpertise() {
     
     // 보상 처리
     if (event.rewardType === 'skill') {
-      // 스킬 보상 처리 (실제 구현에서 더 복잡할 수 있음)
-    } else if (event.rewardType === 'item') {
-      // 아이템 보상 처리
+      acquireSkill(event.rewardId);
     }
     
     // 평판 증가
@@ -330,21 +283,9 @@ export function useExpertise() {
     increaseContactFavor(event.contactId, 50);
     
     return true;
-  }, [expertiseState.pendingEvents, dispatch, increaseContactFavor]);
+  }, [expertiseState.pendingEvents, dispatch, increaseContactFavor, acquireSkill]);
 
-  // 전문성 보너스 계산
-  const calculateExpertiseBonus = useCallback((category: ItemCategory, bonusType: keyof ExpertiseSkill['bonus']): number => {
-    // 해당 카테고리의 활성화된 스킬 찾기
-    const activeSkill = expertiseState.skills.find(s => 
-      s.id === expertiseState.activeSkillId && s.category === category
-    );
-    
-    if (!activeSkill || !activeSkill.bonus[bonusType]) return 0;
-    
-    return activeSkill.bonus[bonusType] as number;
-  }, [expertiseState.skills, expertiseState.activeSkillId]);
-
-  // 카테고리별 보유 스킬
+  // 카테고리별 스킬 목록
   const skillsByCategory = useMemo(() => {
     const result: Record<ItemCategory, ExpertiseSkill[]> = {
       [ItemCategory.WEAPON]: [],
@@ -362,28 +303,41 @@ export function useExpertise() {
     return result;
   }, [expertiseState.skills]);
 
-  // 초기 데이터 로드
-  // useEffect(() => {
-  //   loadExpertiseData();
-  // }, [loadExpertiseData]);
+  // 카테고리별 보유 스킬
+  const getSkillsByCategory = useCallback((category: ItemCategory): ExpertiseSkill[] => {
+    return expertiseState.skills.filter(skill => skill.category === category);
+  }, [expertiseState.skills]);
+
+  // 카테고리별 보너스 계산
+  const calculateCategoryBonus = useCallback((category: ItemCategory, bonusType: string): number => {
+    return expertiseService.calculateCategoryBonus(expertiseState.skills, category, bonusType);
+  }, [expertiseState.skills]);
+
+  // 전체 플레이어 스킬
+  const playerSkills = useMemo(() => expertiseState.skills, [expertiseState.skills]);
 
   return {
+    playerSkills,
+    experience,
     expertiseState,
     selectedSkill,
     selectedContact,
     recentExperience,
     isLoading,
+    skillsByCategory,
     
     loadExpertiseData,
     selectSkill,
     selectContact,
     setActiveSkill,
-    canLevelUpSkill,
-    levelUpSkill,
+    acquireSkill,
+    canUpgradeSkill,
+    upgradeSkill,
+    addExperience,
     increaseContactFavor,
     completeEvent,
     gainExperience,
-    calculateExpertiseBonus,
-    skillsByCategory
+    getSkillsByCategory,
+    calculateCategoryBonus
   };
 }

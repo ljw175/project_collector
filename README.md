@@ -1,3 +1,61 @@
+## 프로젝트 파일 구조 분석 (project_collector)
+
+제공된 파일 구조와 코드 스니펫을 바탕으로 `project_collector` 폴더의 구조를 분석한 결과는 다음과 같습니다.
+
+**개요:**
+
+*   **기술 스택:** React, TypeScript, Vite, Electron 기반의 데스크톱 애플리케이션. (`package.json`, `vite.config.ts`, `tsconfig.*.json`, `electron-main.ts` 존재)
+*   **아키텍처:** 기능별 모듈화(Feature-Sliced Design과 유사) 구조. 핵심 기능들이 `src/features` 아래 각자의 폴더로 분리되어 있다.
+*   **상태 관리:** React Context API (`src/store/gameContext.tsx`)를 사용하는 것으로 추정됩니다.
+*   **스타일링:** CSS 파일을 직접 사용하며, 전역 스타일, 컴포넌트별 스타일, 테스트 페이지별 스타일 등으로 분리되어 있습니다 (`src/styles`).
+
+**주요 폴더 및 역할:**
+
+1.  **루트 (`project_collector/`)**:
+    *   `package.json`: 프로젝트 의존성 및 스크립트 정의.
+    *   `vite.config.ts`: Vite 빌드 설정.
+    *   `tsconfig.*.json`: TypeScript 컴파일러 설정 (앱, Electron, 노드 환경별 분리).
+    *   `electron-main.ts`: Electron 메인 프로세스 진입점.
+    *   `index.html`: 웹 앱의 HTML 진입점.
+    *   `README.md`: 프로젝트 설명 및 기획 문서.
+    *   `eslint.config.js`: ESLint 설정.
+
+2.  **`public/`**:
+    *   Vite에서 정적으로 제공될 파일들 (예: `vite.svg`). 빌드 시 루트 경로에 복사됩니다.
+
+3.  **`src/`**: 애플리케이션의 주요 소스 코드.
+    *   **루트 파일**:
+        *   `main.tsx`: React 애플리케이션의 주 진입점 (ReactDOM 렌더링).
+        *   `App.tsx`: 최상위 React 컴포넌트 (라우팅 설정 등 포함 가능).
+        *   `index.css`, `App.css`: 전역 또는 최상위 레벨 스타일.
+        *   `vite-env.d.ts`: Vite 환경 변수 타입 정의.
+    *   **`assets/`**: 애플리케이션 내부에서 사용되는 정적 자원 (폰트, 아이콘, 이미지 등).
+    *   **`components/`**: 재사용 가능한 UI 컴포넌트.
+        *   `layout/`: 페이지 레이아웃 관련 컴포넌트.
+        *   `ui/`: 버튼, 슬롯, 패널 등 범용 UI 요소 (`ItemSlot.tsx`, `StoryPanel.tsx`, `TagDisplay.tsx`).
+    *   **`data/`**: 게임 내 정적 데이터, 상수 값, 초기 설정 등. 도메인별(감정, 경매, 게임, 인벤토리, 맵 등)로 구조화되어 있습니다.
+    *   **`features/`**: 애플리케이션의 핵심 기능 모듈. 각 기능 폴더는 유사한 내부 구조를 가집니다.
+        *   `appraisal/`, `auction/`, `calendar/`, `collection/`, `expertise/`, `inventory/`, `map/`: 각 기능 도메인.
+        *   `*_index.ts`: 해당 기능 모듈의 공개 API를 정의하는 barrel 파일.
+        *   `components/`: 해당 기능에 특화된 React 컴포넌트.
+        *   `hooks/`: 해당 기능의 상태 로직을 담은 커스텀 React Hooks (`useMap`, `useInventory` 등).
+        *   `services/`: 해당 기능의 비즈니스 로직, 데이터 처리, 외부 연동 등 (존재한다면).
+        *   `types/`: 해당 기능에서 사용되는 TypeScript 타입 정의 (`map_types.ts`, `inventory_types.ts` 등).
+        *   `utils/`: 해당 기능에 특화된 유틸리티 함수 (존재한다면).
+    *   **`hooks/`**: 여러 기능에서 공유되거나 전역적으로 사용될 수 있는 커스텀 React Hooks.
+    *   **`models/`**: 애플리케이션 전반에서 사용되는 핵심 데이터 모델(타입/인터페이스) 정의 (`game.ts`, `item.ts`, `player.ts`).
+    *   **`routes/`**: 페이지 레벨의 컴포넌트. React Router 등 라우팅 라이브러리와 함께 사용될 가능성이 높습니다. `*Test.tsx` 형태의 파일들은 각 기능별 테스트/데모 페이지로 보입니다 (`MapTest.tsx`, `InventoryTest.tsx` 등). `MainNav.tsx`는 주 내비게이션 컴포넌트일 수 있습니다.
+    *   **`services/`**: 여러 기능에서 공유되거나 전역적인 비즈니스 로직, API 연동 등을 담당하는 모듈. `gameLogic`, `storage` 등이 포함될 수 있습니다.
+    *   **`store/`**: 전역 상태 관리 관련 코드.
+        *   `gameContext.tsx`: 게임의 전역 상태를 제공하는 React Context.
+        *   `actionTypes.ts`: 상태 변경 액션 타입 정의 (Reducer 패턴 사용 가능성).
+    *   **`styles/`**: CSS 스타일 시트. 전역(`global.css`), 컴포넌트 공통(`components.css`), 디자인 토큰(`tokens.css`), 각 테스트 페이지별 스타일(`*-test.css`) 등으로 구성됩니다.
+    *   **`utils/`**: 여러 곳에서 사용될 수 있는 범용 유틸리티 함수.
+
+**요약:**
+
+이 프로젝트는 React와 TypeScript를 사용하여 구조화된 방식으로 개발되고 있으며, 특히 `src/features` 폴더를 중심으로 각 기능의 관심사를 명확히 분리하려는 노력이 엿보입니다. 커스텀 훅을 통해 상태 로직을 분리하고, Context API로 전역 상태를 관리하며, 타입스크립트를 적극적으로 활용하여 코드의 안정성을 높이고 있습니다. 테스트 페이지가 다수 존재하는 것으로 보아 기능별 개발 및 테스트를 중요하게 여기는 것으로 판단됩니다.
+
 ### 텍스트 기반 익스트랙션 + 전당포 경영/경매 게임 ― 핵심 기획 정리
 
 Persona: 너는 내가 진행하는 "Collector" 프로젝트 팀의 핵심적인 전문 개발자로 나의 기획을 바탕으로 프로그램을 구현해야한다.

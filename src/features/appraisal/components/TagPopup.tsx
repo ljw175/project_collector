@@ -1,10 +1,11 @@
 import React from 'react';
-import { Item, isAppraised, /*ItemTag*/ } from '@models/item';
+import { Item, isAppraised, ItemTag } from '@models/item';
 import TagDisplay from '@components/ui/TagDisplay';
 import './TagPopup.css';
 
 interface TagPopupProps {
   item: Item;
+  itemTag?: ItemTag; // 태그 정보 (선택적)
   onClose: () => void;
   onAppraise?: () => void;
   onRepair?: () => void;

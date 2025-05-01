@@ -1,0 +1,552 @@
+/* 캘린더 테스트 페이지 스타일 */
+
+/* 메인 레이아웃 */
+.calendar-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* 캘린더 뷰 */
+.calendar-view {
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  border: 1px solid #ddd;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.current-month {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.calendar-navigation {
+  display: flex;
+  gap: 10px;
+}
+
+.prev-month-btn,
+.next-month-btn {
+  padding: 5px 15px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prev-month-btn:hover,
+.next-month-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.return-today-btn {
+  padding: 5px 15px;
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.return-today-btn:hover {
+  background-color: #303f9f;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 10px;
+}
+
+.weekday {
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+  padding: 8px 0;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day {
+  position: relative;
+  height: 80px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #eee;
+}
+
+.calendar-day:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.current-day {
+  background-color: rgba(63, 81, 181, 0.1);
+  border: 2px solid #3f51b5;
+}
+
+.selected-day {
+  background-color: rgba(76, 175, 80, 0.1);
+  border: 2px solid #4CAF50;
+}
+
+.other-month {
+  opacity: 0.5;
+}
+
+.day-number {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+  text-align: right;
+}
+
+.current-day .day-number {
+  color: #3f51b5;
+}
+
+.event-indicator {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.event-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f44336;
+}
+
+.event-dot.priority-high {
+  background-color: #f44336;
+}
+
+.event-dot.priority-medium {
+  background-color: #FF9800;
+}
+
+.event-dot.priority-low {
+  background-color: #4CAF50;
+}
+
+.has-events {
+  position: relative;
+}
+
+.has-events::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #3f51b5;
+}
+
+.day-events {
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.day-event {
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 2px 4px;
+  margin-bottom: 2px;
+  border-radius: 2px;
+  color: white;
+}
+
+.event-type-meeting {
+  background-color: #3f51b5;
+}
+
+.event-type-auction {
+  background-color: #FF9800;
+}
+
+.event-type-appointment {
+  background-color: #4CAF50;
+}
+
+.event-type-deadline {
+  background-color: #f44336;
+}
+
+.event-type-other {
+  background-color: #9C27B0;
+}
+
+/* 이벤트 목록 */
+.events-panel {
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.panel-header {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.selected-date {
+  margin-bottom: 15px;
+}
+
+.date-display {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.day-of-week {
+  color: #757575;
+  margin-left: 10px;
+}
+
+.event-actions {
+  margin-bottom: 15px;
+}
+
+.add-event-btn {
+  padding: 8px 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-event-btn:hover {
+  background-color: #388E3C;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.no-events {
+  text-align: center;
+  color: #757575;
+  padding: 20px 0;
+}
+
+.event-item {
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  border-left: 4px solid #ccc;
+  position: relative;
+}
+
+.event-item.priority-high {
+  border-left-color: #f44336;
+}
+
+.event-item.priority-medium {
+  border-left-color: #FF9800;
+}
+
+.event-item.priority-low {
+  border-left-color: #4CAF50;
+}
+
+.event-time {
+  font-size: 12px;
+  color: #757575;
+  margin-bottom: 5px;
+}
+
+.event-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 16px;
+  color: #333;
+}
+
+.event-description {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.event-location {
+  display: flex;
+  align-items: center;
+  color: #3f51b5;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.event-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.event-tag {
+  background-color: #e0e0e0;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #333;
+}
+
+.event-controls {
+  display: flex;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.edit-event-btn,
+.delete-event-btn {
+  padding: 5px 10px;
+  font-size: 12px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-event-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.delete-event-btn:hover {
+  background-color: #ffebee;
+  color: #f44336;
+  border-color: #f44336;
+}
+
+/* 이벤트 폼 */
+.event-form {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.form-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.time-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.time-input {
+  flex: 1;
+}
+
+.priority-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.priority-option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.save-btn,
+.cancel-btn {
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+}
+
+.save-btn:hover {
+  background-color: #388E3C;
+}
+
+.cancel-btn {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background-color: #e0e0e0;
+}
+
+/* 캘린더 이벤트 요약 */
+.events-summary {
+  margin-top: 20px;
+}
+
+.summary-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.upcoming-events {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.upcoming-event {
+  display: flex;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  border: 1px solid #eee;
+  align-items: center;
+}
+
+.event-date {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #3f51b5;
+  color: white;
+  border-radius: 5px;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.date-day {
+  font-size: 14px;
+}
+
+.date-month {
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.event-content {
+  flex: 1;
+}
+
+.upcoming-title {
+  font-weight: bold;
+  margin-bottom: 3px;
+  color: #333;
+}
+
+.upcoming-time {
+  font-size: 12px;
+  color: #757575;
+}
+
+.days-away {
+  font-size: 12px;
+  color: #3f51b5;
+  margin-left: auto;
+  font-weight: bold;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .calendar-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .calendar-day {
+    height: 60px;
+  }
+  
+  .event-dot {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .day-events {
+    display: none;
+  }
+}

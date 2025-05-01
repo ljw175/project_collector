@@ -1,101 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/components.css';
+import { useAuction } from '../features/auction/hooks/useAuction';
+import { useInventory } from '../features/inventory/hooks/useInventory';
+import { Item } from '../models/item';
 
 /**
  * 경매 시스템 테스트 페이지
  */
 const AuctionTest: React.FC = () => {
-  // 경매 상태 정의
-  enum AuctionState {
-    PREVIEW = 'preview',   // 경매 시작 전 미리보기
-    BIDDING = 'bidding',   // 경매 진행 중
-    FINISHED = 'finished'  // 경매 종료
-  }
-  
-  // 아이템 카테고리
-  enum ItemCategory {
-    WEAPON = 'weapon',
-    JEWELRY = 'jewelry',
-    ART = 'art',
-    BOOK = 'book',
-    HOUSEHOLD = 'household',
-    MATERIAL = 'material'
-  }
-  
-  // 아이템 정의
-  interface AuctionItem {
-    id: string;
-    name: string;
-    description: string;
-    category: ItemCategory;
-    baseValue: number;
-    estimatedValue: number;
-    minBid: number;
-    image?: string;
-    tags: string[];
-  }
-  
-  // 입찰 정의
-  interface Bid {
-    id: string;
-    bidderId: string;
-    bidderName: string;
-    amount: number;
-    timestamp: number;
-    isAutoBid: boolean;
-  }
-  
-  // NPC 입찰자 정의
-  interface NpcBidder {
-    id: string;
-    name: string;
-    maxBid: number;
-    bidProbability: number;     // 0-1 사이의 입찰 확률
-    bidStyle: 'aggressive' | 'cautious' | 'unpredictable';
-    interests: ItemCategory[];  // 관심 있는 아이템 카테고리
-  }
-  
-  // 테스트용 아이템 데이터
-  const [currentItem, setCurrentItem] = useState<AuctionItem>({
-    id: 'item-1',
-    name: '고대의 장식용 단검',
-    description: '구리로 만들어진 의식용 단검으로, 손잡이에는 정교한 문양이 새겨져 있다. 칼날은 놀랍도록 잘 보존되어 있다.',
-    category: ItemCategory.WEAPON,
-    baseValue: 500,
-    estimatedValue: 800,
-    minBid: 500,
-    tags: ['고대의', '의식용', '잘 보존된'],
-  });
-  
-  // 테스트용 NPC 입찰자 데이터
-  const [npcBidders, setNpcBidders] = useState<NpcBidder[]>([
-    {
-      id: 'npc-1',
-      name: '김 수집가',
-      maxBid: 1200,
-      bidProbability: 0.8,
-      bidStyle: 'cautious',
-      interests: [ItemCategory.WEAPON, ItemCategory.ART]
-    },
-    {
-      id: 'npc-2',
-      name: '이 골동품상',
-      maxBid: 900,
-      bidProbability: 0.6,
-      bidStyle: 'aggressive',
-      interests: [ItemCategory.WEAPON, ItemCategory.JEWELRY]
-    },
-    {
-      id: 'npc-3',
-      name: '박 상인',
-      maxBid: 700,
-      bidProbability: 0.5,
-      bidStyle: 'unpredictable',
-      interests: [ItemCategory.BOOK, ItemCategory.MATERIAL]
-    }
-  ]);
-  
   // 플레이어 정보
   const [player, setPlayer] = useState({
     id: 'player-1',
@@ -104,166 +17,69 @@ const AuctionTest: React.FC = () => {
     maxAutoBid: 0  // 자동 입찰 최대 금액
   });
   
-  // 경매 상태
-  const [auctionState, setAuctionState] = useState<AuctionState>(AuctionState.PREVIEW);
-  const [currentBids, setCurrentBids] = useState<Bid[]>([]);
-  const [winningBid, setWinningBid] = useState<Bid | null>(null);
-  const [roundTime, setRoundTime] = useState(20); // 라운드 시간(초)
-  const [timeRemaining, setTimeRemaining] = useState(roundTime);
-  const [roundCount, setRoundCount] = useState(0);
+  // 선택된 아이템 상태 관리
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [auctionId, setAuctionId] = useState<string | null>(null);
   
   // 입력 값
-  const [manualBidAmount, setManualBidAmount] = useState(currentItem.minBid.toString());
+  const [manualBidAmount, setManualBidAmount] = useState('');
   const [autoBidAmount, setAutoBidAmount] = useState('0');
   
-  // 타이머 ref
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // 인벤토리 훅 사용
+  const { items, addItem, removeItem } = useInventory();
   
-  // 경매 시작
-  const startAuction = () => {
-    setAuctionState(AuctionState.BIDDING);
-    setRoundCount(1);
-    setTimeRemaining(roundTime);
-    setCurrentBids([]);
-    
-    // 시작 입찰가로 최소 입찰가 설정
-    setManualBidAmount(currentItem.minBid.toString());
-    
-    // 타이머 시작
-    startTimer();
+  // 경매 훅 사용
+  const {
+    auctionStatus,
+    currentRound,
+    timeRemaining,
+    auctionItems,
+    currentItemIndex,
+    bidHistory,
+    participants,
+    startAuction,
+    placeBid
+  } = useAuction();
+  
+  // 현재 경매 아이템
+  const currentAuctionItem = auctionItems[currentItemIndex] || null;
+  
+  // 편의를 위한 파생 값
+  const isAuctionActive = auctionStatus === 'bidding';
+  const isAuctionEnded = auctionStatus === 'complete';
+  const isAuctionIdle = !isAuctionActive && !isAuctionEnded;
+  const currentHighestBid = currentRound?.currentHighestBid || 0;
+  const currentHighestBidder = currentRound?.currentHighestBidderId || '';
+  
+  // 경매 참가자 이름 가져오기
+  const getBidderName = (bidderId: string) => {
+    if (bidderId === player.id) return '플레이어';
+    return participants.find(p => p.id === bidderId)?.name || '알 수 없음';
   };
   
-  // 타이머 시작
-  const startTimer = () => {
-    // 이전 타이머 제거
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    
-    // 새 타이머 설정
-    timerRef.current = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          // 타이머 종료
-          if (timerRef.current) {
-            clearInterval(timerRef.current);
-          }
-          
-          // 라운드 종료 처리
-          endRound();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-  
-  // 라운드 종료
-  const endRound = () => {
-    // NPC 입찰 결정
-    npcBidders.forEach(npc => {
-      // 이미 최고 입찰가가 npc의 최대 입찰가를 초과하면 입찰하지 않음
-      const highestBid = getHighestBid();
-      if (highestBid && highestBid.amount >= npc.maxBid) return;
+  // 아이템 선택 시 경매 ID 생성
+  useEffect(() => {
+    if (selectedItem && !auctionId) {
+      // 랜덤 경매 ID 생성
+      const newAuctionId = `auction-${Date.now()}`;
+      setAuctionId(newAuctionId);
       
-      // 입찰 확률에 따라 입찰 여부 결정
-      if (Math.random() <= npc.bidProbability) {
-        const currentMinBid = highestBid ? highestBid.amount + 50 : currentItem.minBid;
-        
-        // 입찰 금액 결정 (입찰 스타일에 따라 다름)
-        let bidAmount = currentMinBid;
-        if (npc.bidStyle === 'aggressive') {
-          // 공격적: 현재 최고가보다 10-20% 더 높게 입찰
-          bidAmount = Math.min(npc.maxBid, Math.floor(currentMinBid * (1 + 0.1 + Math.random() * 0.1)));
-        } else if (npc.bidStyle === 'cautious') {
-          // 신중함: 현재 최고가보다 약간만 더 높게 입찰
-          bidAmount = Math.min(npc.maxBid, currentMinBid + Math.floor(Math.random() * 50) + 10);
-        } else {
-          // 예측불가: 랜덤하게 입찰
-          bidAmount = Math.min(npc.maxBid, currentMinBid + Math.floor(Math.random() * 100));
-        }
-        
-        // 아이템이 관심 카테고리인 경우 더 높게 입찰
-        if (npc.interests.includes(currentItem.category)) {
-          bidAmount = Math.min(npc.maxBid, Math.floor(bidAmount * 1.2));
-        }
-        
-        // 최소 입찰가보다 높은 경우에만 입찰
-        if (bidAmount > currentMinBid) {
-          addBid({
-            id: `bid-${Date.now()}-${npc.id}`,
-            bidderId: npc.id,
-            bidderName: npc.name,
-            amount: bidAmount,
-            timestamp: Date.now(),
-            isAutoBid: false
-          });
-        }
-      }
-    });
-    
-    // 플레이어 자동 입찰 처리
-    if (player.maxAutoBid > 0) {
-      const highestBid = getHighestBid();
-      if (highestBid && highestBid.bidderId !== player.id && highestBid.amount < player.maxAutoBid) {
-        const autoBidAmount = Math.min(player.maxAutoBid, highestBid.amount + 50);
-        addBid({
-          id: `bid-${Date.now()}-${player.id}`,
-          bidderId: player.id,
-          bidderName: player.name,
-          amount: autoBidAmount,
-          timestamp: Date.now(),
-          isAutoBid: true
-        });
-      }
+      // 초기 입찰액 설정
+      const basePrice = selectedItem.isAppraised ? selectedItem.actualValue : selectedItem.baseValue;
+      const startingBid = Math.max(50, Math.floor(basePrice * 0.5));
+      setManualBidAmount(startingBid.toString());
     }
-    
-    // 다음 라운드 결정
-    if (roundCount < 5) {
-      setRoundCount(prev => prev + 1);
-      setTimeRemaining(roundTime);
-      startTimer();
-    } else {
-      // 경매 종료
-      endAuction();
-    }
-  };
-  
-  // 경매 종료
-  const endAuction = () => {
-    // 타이머 중지
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    
-    // 경매 결과 설정
-    setAuctionState(AuctionState.FINISHED);
-    
-    // 최종 낙찰자 결정
-    const highestBid = getHighestBid();
-    if (highestBid) {
-      setWinningBid(highestBid);
-      
-      // 플레이어가 낙찰받은 경우 코인 차감
-      if (highestBid.bidderId === player.id) {
-        setPlayer(prev => ({
-          ...prev,
-          coins: prev.coins - highestBid.amount
-        }));
-      }
-    }
-  };
+  }, [selectedItem, auctionId]);
   
   // 수동 입찰
-  const placeBid = () => {
+  const handlePlaceBid = () => {
     const bidAmount = parseInt(manualBidAmount);
     
     // 유효한 입찰 금액 확인
     if (isNaN(bidAmount) || bidAmount <= 0) return;
     
     // 최소 입찰가 확인
-    const highestBid = getHighestBid();
-    const minBid = highestBid ? highestBid.amount + 10 : currentItem.minBid;
+    const minBid = currentHighestBid ? currentHighestBid + 10 : currentAuctionItem?.startingBid || 0;
     
     if (bidAmount < minBid) {
       alert(`최소 입찰가는 ${minBid}입니다.`);
@@ -276,15 +92,18 @@ const AuctionTest: React.FC = () => {
       return;
     }
     
-    // 입찰 추가
-    addBid({
-      id: `bid-${Date.now()}-${player.id}`,
-      bidderId: player.id,
-      bidderName: player.name,
-      amount: bidAmount,
-      timestamp: Date.now(),
-      isAutoBid: false
-    });
+    // 입찰 실행
+    const bidResult = placeBid(bidAmount);
+    
+    if (bidResult) {
+      // 플레이어 소지금 업데이트 (실제로는 훅 내부나 리덕스 등에서 처리될 것)
+      setPlayer(prev => ({
+        ...prev,
+        coins: prev.coins - bidAmount // 단순화를 위해 즉시 차감
+      }));
+    } else {
+      alert('입찰에 실패했습니다.');
+    }
   };
   
   // 자동 입찰 설정
@@ -307,22 +126,18 @@ const AuctionTest: React.FC = () => {
     }));
     
     // 현재 최고 입찰가보다 높은 경우 즉시 입찰
-    const highestBid = getHighestBid();
-    const minBid = highestBid ? highestBid.amount + 10 : currentItem.minBid;
+    const minBid = currentHighestBid ? currentHighestBid + 10 : currentAuctionItem?.startingBid || 0;
     
-    if (maxBid >= minBid && (!highestBid || highestBid.bidderId !== player.id)) {
-      addBid({
-        id: `bid-${Date.now()}-${player.id}`,
-        bidderId: player.id,
-        bidderName: player.name,
-        amount: minBid,
-        timestamp: Date.now(),
-        isAutoBid: true
-      });
+    if (maxBid >= minBid && currentHighestBidder !== player.id) {
+      placeBid(minBid);
+      setPlayer(prev => ({
+        ...prev,
+        coins: prev.coins - minBid
+      }));
     }
   };
   
-  // 입찰 취소
+  // 자동 입찰 취소
   const cancelBid = () => {
     setPlayer(prev => ({
       ...prev,
@@ -330,28 +145,54 @@ const AuctionTest: React.FC = () => {
     }));
   };
   
-  // 입찰 추가
-  const addBid = (bid: Bid) => {
-    setCurrentBids(prev => [...prev, bid]);
-  };
-  
-  // 최고 입찰 조회
-  const getHighestBid = (): Bid | null => {
-    if (currentBids.length === 0) return null;
+  // 판매 완료 처리
+  const handleSellItem = () => {
+    if (!isAuctionEnded || !currentAuctionItem) return;
     
-    return currentBids.reduce((highest, bid) => {
-      return bid.amount > highest.amount ? bid : highest;
-    });
+    // 경매 종료 후 아이템 판매 처리
+    if (currentHighestBidder && currentHighestBidder !== player.id) {
+      // 인벤토리에서 아이템 제거
+      if (selectedItem) {
+        removeItem(selectedItem.id);
+      }
+      
+      // 코인 획득
+      setPlayer(prev => ({
+        ...prev, 
+        coins: prev.coins + currentHighestBid
+      }));
+      
+      // 경매 초기화
+      setSelectedItem(null);
+      setAuctionId(null);
+    }
   };
   
-  // 페이지 언마운트 시 타이머 제거
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
+  // 이 테스트 페이지를 위한 경매 초기화 함수
+  const initializeAndStartAuction = () => {
+    if (!selectedItem || !auctionId) return;
+    
+    // 이 테스트 페이지에서는 간소화된 경매 시작 방식 사용
+    startAuction(auctionId);
+  };
+  
+  // 이 테스트 페이지를 위한 경매 리셋 함수
+  const resetTestAuction = () => {
+    setSelectedItem(null);
+    setAuctionId(null);
+    setManualBidAmount('');
+    setAutoBidAmount('0');
+  };
+  
+  // 예상 판매가 계산 (더미 구현, 실제로는 서비스에서 구현)
+  const estimateSalePrice = (item: Item) => {
+    const basePrice = item.isAppraised ? item.actualValue : item.baseValue;
+    return {
+      min: Math.floor(basePrice * 0.8),
+      average: basePrice,
+      max: Math.floor(basePrice * 1.2)
     };
-  }, []);
+  };
   
   return (
     <div className="app-container">
@@ -363,62 +204,106 @@ const AuctionTest: React.FC = () => {
         </div>
       </header>
       
-      <main className="app-content">
         {/* 경매 상태 표시 */}
         <div className="auction-status">
-          {auctionState === AuctionState.PREVIEW && (
+          {isAuctionIdle && (
             <div className="status-message">경매 준비 중</div>
           )}
-          {auctionState === AuctionState.BIDDING && (
+          {isAuctionActive && (
             <>
-              <div className="status-message">경매 진행 중 - 라운드 {roundCount}/5</div>
+              <div className="status-message">경매 진행 중 - 라운드 {currentItemIndex + 1}/{auctionItems.length}</div>
               <div className="timer">
                 <div className="timer-bar">
                   <div 
                     className="timer-fill" 
-                    style={{ width: `${(timeRemaining / roundTime) * 100}%` }}
+                    style={{ width: `${(timeRemaining / 30) * 100}%` }}
                   ></div>
                 </div>
                 <div className="timer-text">{timeRemaining}초</div>
               </div>
             </>
           )}
-          {auctionState === AuctionState.FINISHED && (
+          {isAuctionEnded && (
             <div className="status-message">경매 종료</div>
           )}
         </div>
-        
         {/* 경매 상태별 화면 */}
-        {auctionState === AuctionState.PREVIEW && (
+        {isAuctionIdle && 
           <div className="auction-preview">
-            <h2>다음 경매 아이템</h2>
-            <p><strong>{currentItem.name}</strong></p>
-            <p>{currentItem.description}</p>
-            <p>최소 입찰가: {currentItem.minBid} 코인</p>
-            <p>예상 가치: {currentItem.estimatedValue} 코인</p>
-            <p>경매 참여자: {npcBidders.length}명의 NPC + 플레이어</p>
-            <button className="btn btn-primary" onClick={startAuction}>
-              경매 시작
-            </button>
+            {selectedItem ? (
+              <>
+                <h2>경매 아이템</h2>
+                <p><strong>{selectedItem.name}</strong></p>
+                <p>{selectedItem.description}</p>
+                <p>최소 입찰가: {parseInt(manualBidAmount) || 0} 코인</p>
+                
+                {/* 예상 판매가 표시 */}
+                {selectedItem.isAppraised && (
+                  <div className="estimate">
+                    <h3>예상 판매가</h3>
+                    {(() => {
+                      const estimate = estimateSalePrice(selectedItem);
+                      return (
+                        <p>
+                          <span className="estimate-min">{estimate.min}</span>
+                          {' ~ '}
+                          <span className="estimate-avg">{estimate.average}</span>
+                          {' ~ '}
+                          <span className="estimate-max">{estimate.max}</span>
+                          {' 코인'}
+                        </p>
+                      );
+                    })()}
+                  </div>
+                )}
+                
+                <p>경매 참여자: {participants.length}명의 참가자</p>
+                <button className="btn btn-primary" onClick={initializeAndStartAuction}>
+                  경매 시작
+                </button>
+              </>
+            ) : (
+              <>
+                <h2>판매할 아이템 선택</h2>
+                <div className="items-grid">
+                  {items.filter(item => item.isAppraised).map(item => (
+                    <div 
+                      key={item.id} 
+                      className={`item-card ${selectedItem?.id === item.id ? 'selected' : ''}`} 
+                      onClick={() => setSelectedItem(item)}
+                    >
+                      <div className="item-name">{item.name}</div>
+                      <div className="item-value">{item.actualValue || item.baseValue} 코인</div>
+                    </div>
+                  ))}
+                </div>
+                
+                {items.filter(item => item.isAppraised).length === 0 && (
+                  <p className="text-muted">판매할 감정된 아이템이 없습니다. 인벤토리에서 아이템을 먼저 감정하세요.</p>
+                )}
+              </>
+            )}
           </div>
-        )}
-        
-        {auctionState === AuctionState.BIDDING && (
+        }
+        {isAuctionActive && currentAuctionItem && (
           <div className="auction-main">
             {/* 아이템 정보 */}
             <div className="item-details">
-              <h2>{currentItem.name}</h2>
+              <h2>{currentAuctionItem.item.name}</h2>
               <div className="item-info">
                 <div className="item-image-placeholder">
                   아이템 이미지
                 </div>
                 <div className="item-data">
-                  <p>{currentItem.description}</p>
-                  <p><strong>카테고리:</strong> {currentItem.category}</p>
-                  <p><strong>태그:</strong> {currentItem.tags.join(', ')}</p>
-                  <p><strong>최소 입찰가:</strong> {currentItem.minBid} 코인</p>
-                  <p><strong>현재 최고 입찰:</strong> {getHighestBid()?.amount || '없음'} 코인 
-                    ({getHighestBid()?.bidderName || '-'})
+                  <p>{currentAuctionItem.item.description}</p>
+                  <p><strong>카테고리:</strong> {currentAuctionItem.item.category}</p>
+                  <p><strong>태그:</strong> {Array.isArray(currentAuctionItem.item.tags) && currentAuctionItem.item.tags.length > 0 ? 
+                      currentAuctionItem.item.tags.map(tag => tag.name).join(', ') : 
+                      '없음'}</p>
+                  <p><strong>최소 입찰가:</strong> {currentAuctionItem.startingBid || '없음'} 코인</p>
+                  <p>
+                    <strong>현재 최고 입찰:</strong> {currentHighestBid || '없음'} 코인 
+                    ({getBidderName(currentHighestBidder)})
                   </p>
                 </div>
               </div>
@@ -429,11 +314,11 @@ const AuctionTest: React.FC = () => {
               {/* 입찰 기록 */}
               <div className="bid-history">
                 <h3>입찰 기록</h3>
-                {currentBids.length > 0 ? (
-                  currentBids.slice().reverse().map(bid => (
-                    <div key={bid.id} className="bid-entry">
-                      <span>{bid.bidderName} {bid.isAutoBid ? '(자동)' : ''}</span>
-                      <span>{bid.amount} 코인</span>
+                {bidHistory.length > 0 ? (
+                  bidHistory.slice().reverse().map((bid, index) => (
+                    <div key={index} className="bid-entry">
+                      <span>{getBidderName(bid.participantId)}</span>
+                      <span>{bid.bidAmount} 코인</span>
                     </div>
                   ))
                 ) : (
@@ -455,12 +340,12 @@ const AuctionTest: React.FC = () => {
                     type="number" 
                     value={manualBidAmount}
                     onChange={(e) => setManualBidAmount(e.target.value)}
-                    min={getHighestBid() ? getHighestBid()!.amount + 10 : currentItem.minBid}
+                    min={currentHighestBid ? currentHighestBid + 10 : 10}
                     placeholder="입찰 금액"
                   />
                   <button 
                     className="btn btn-primary"
-                    onClick={placeBid}
+                    onClick={handlePlaceBid}
                   >
                     입찰
                   </button>
@@ -495,19 +380,29 @@ const AuctionTest: React.FC = () => {
           </div>
         )}
         
-        {auctionState === AuctionState.FINISHED && (
+        {isAuctionEnded && (
           <div className="result-section">
             <h3>경매 결과</h3>
             
-            {winningBid ? (
+            {currentHighestBidder ? (
               <div className="auction-result">
-                <div className="winner">낙찰자: {winningBid.bidderName}</div>
-                <div className="final-price">낙찰가: {winningBid.amount} 코인</div>
+                <div className="winner">
+                  낙찰자: {getBidderName(currentHighestBidder)}
+                </div>
+                <div className="final-price">낙찰가: {currentHighestBid} 코인</div>
                 
-                {winningBid.bidderId === player.id ? (
+                {currentHighestBidder === player.id ? (
                   <p>축하합니다! 당신이 이 아이템을 획득했습니다.</p>
                 ) : (
-                  <p>{winningBid.bidderName}이(가) 이 아이템을 획득했습니다.</p>
+                  <>
+                    <p>{getBidderName(currentHighestBidder)}가 이 아이템을 획득했습니다.</p>
+                    <button 
+                      className="btn btn-primary"
+                      onClick={handleSellItem}
+                    >
+                      판매 완료 ({currentHighestBid} 코인 획득)
+                    </button>
+                  </>
                 )}
               </div>
             ) : (
@@ -517,18 +412,14 @@ const AuctionTest: React.FC = () => {
             )}
             
             <button 
-              className="btn btn-primary"
-              onClick={() => {
-                setAuctionState(AuctionState.PREVIEW);
-                setWinningBid(null);
-              }}
+              className="btn"
+              onClick={resetTestAuction}
             >
               다음 경매
             </button>
           </div>
         )}
-      </main>
-    </div>
+      </div>
   );
 };
 

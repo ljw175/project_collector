@@ -8,9 +8,15 @@ export interface AuctionParticipant {
   id: string;
   name: string;
   isPlayer: boolean;
-  bidStrategy?: 'aggressive' | 'cautious' | 'unpredictable';
+  bidStrategy?: BidStrategy; // 입찰 전략
   maxBudget?: number;
   interestCategories?: string[]; // 관심 카테고리
+}
+
+export interface BidStrategy {
+  minIncrementMultiplier: number; // 최소 입찰 증가 배수 (0-1)
+  maxIncrementMultiplier: number; // 최대 입찰 증가 배수 (0-1)
+  bidProbability: number; // 입찰 시도 확률 (0-1)
 }
 
 // 입찰 기록

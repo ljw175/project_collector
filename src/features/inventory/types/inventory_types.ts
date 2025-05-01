@@ -5,12 +5,12 @@ import { Item, ItemCategory } from '@models/item';
 
 // 인벤토리 필터 옵션
 export interface InventoryFilter {
-  searchText?: string;
-  categories?: ItemCategory[];
-  isAppraised?: boolean;
-  minValue?: number;
-  maxValue?: number;
-  tags?: string[]; // 태그 ID 목록
+  searchText: string;
+  categories: ItemCategory[];
+  isAppraised: boolean;
+  minValue: number;
+  maxValue: number;
+  tags: string[]; // 태그 ID 목록
 }
 
 // 인벤토리 정렬 옵션

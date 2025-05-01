@@ -7,6 +7,9 @@ import { GameSettings, GameState } from '@models/game';
 import { ExpertiseAction } from '@features/expertise/types/expertise_actions';
 import { InventoryAction } from '@features/inventory/types/inventory_actions';
 import { AppraisalAction } from '@features/appraisal/types/appraisal_actions';
+import { MapAction } from '@features/map/types/map_actions';
+import { PlayerAction } from '@features/player/types/player_actions';
+import { CalendarAction } from '@features/calendar/types/calendar_actions';
 
 // 기본 게임 액션
 export type CoreGameAction =
@@ -26,4 +29,7 @@ export type GameAction =
   | CoreGameAction
   | ExpertiseAction
   | InventoryAction
-  | AppraisalAction;
+  | AppraisalAction
+  | MapAction
+  | PlayerAction
+  | CalendarAction;
