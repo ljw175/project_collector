@@ -9,7 +9,7 @@ import {
   categoryLabels,
   valueRangeOptions,
   inventoryCapacityLimits
-} from '@data/constants/inventory-constants';
+} from '@/data/constants/inventory-constants';
 
 /**
  * 인벤토리 서비스 클래스
@@ -75,7 +75,7 @@ export class InventoryService {
     // 가치 범위 필터
     if (filter.minValue !== undefined || filter.maxValue !== undefined) {
       result = result.filter(item => {
-        const value = isAppraised(item) ? item.actualValue : item.baseValue;
+        const value = isAppraised(item) ? item.convertedActualValue : item.convertedBaseValue;
         
         if (filter.minValue !== undefined && value < filter.minValue) {
           return false;
@@ -114,15 +114,15 @@ export class InventoryService {
       
       case 'value-asc':
         return sorted.sort((a, b) => {
-          const valueA = isAppraised(a) ? a.actualValue : a.baseValue;
-          const valueB = isAppraised(b) ? b.actualValue : b.baseValue;
+          const valueA = isAppraised(a) ? a.convertedActualValue : a.convertedBaseValue;
+          const valueB = isAppraised(b) ? b.convertedActualValue : b.convertedBaseValue;
           return valueA - valueB;
         });
       
       case 'value-desc':
         return sorted.sort((a, b) => {
-          const valueA = isAppraised(a) ? a.actualValue : a.baseValue;
-          const valueB = isAppraised(b) ? b.actualValue : b.baseValue;
+          const valueA = isAppraised(a) ? a.convertedActualValue : a.convertedBaseValue;
+          const valueB = isAppraised(b) ? b.convertedActualValue : b.convertedBaseValue;
           return valueB - valueA;
         });
       
@@ -150,7 +150,7 @@ export class InventoryService {
    */
   calculateTotalValue(items: Item[]): number {
     return items.reduce((total, item) => {
-      const value = isAppraised(item) ? item.actualValue : item.baseValue;
+      const value = isAppraised(item) ? item.convertedActualValue : item.convertedBaseValue;
       return total + (value * item.quantity);
     }, 0);
   }

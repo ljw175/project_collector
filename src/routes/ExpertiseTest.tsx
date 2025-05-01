@@ -5,7 +5,7 @@ import { useExpertise } from '../features/expertise/hooks/useExpertise';
 import { ExpertiseLevel } from '../models/player';
 import { ExpertiseSkill } from '../features/expertise/types/expertise_types';
 import { ItemCategory } from '../models/item';
-import { expertiseService } from '../services/expertise';
+import { expertiseService } from '../services/expertise/expertise_service_index';
 
 /**
  * 전문성 시스템 테스트 페이지

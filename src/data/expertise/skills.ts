@@ -9,11 +9,11 @@ import { ItemCategory } from '@models/item';
  * 전문성 레벨에 따른 보너스 배수
  */
 export const expertiseLevelMultipliers = {
-  beginner: 1.0,
-  apprentice: 1.5,
-  proficient: 2.0,
-  expert: 3.0,
-  master: 4.0
+  [ExpertiseLevel.BEGINNER]: 1.0,
+  [ExpertiseLevel.AMATEUR]: 1.2,
+  [ExpertiseLevel.INTERMEDIATE]: 1.4,
+  [ExpertiseLevel.EXPERT]: 1.6,
+  [ExpertiseLevel.MASTER]: 2.0
 };
 
 /**
@@ -28,6 +28,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.WEAPON,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 10,
       valueIncrease: 5,
       sellingPriceBonus: 5,
@@ -43,6 +44,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.WEAPON,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 0,
       valueIncrease: 0,
       sellingPriceBonus: 0,
@@ -58,6 +60,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.WEAPON,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 5,
       valueIncrease: 0,
       sellingPriceBonus: 10,
@@ -75,6 +78,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.JEWELRY,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 15,
       valueIncrease: 5,
       sellingPriceBonus: 5,
@@ -90,6 +94,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.JEWELRY,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 0,
       valueIncrease: 10,
       sellingPriceBonus: 0,
@@ -107,6 +112,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.ART,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 10,
       valueIncrease: 5,
       sellingPriceBonus: 5,
@@ -122,6 +128,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.ART,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 0,
       valueIncrease: 10,
       sellingPriceBonus: 0,
@@ -139,6 +146,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.BOOK,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 10,
       valueIncrease: 5,
       sellingPriceBonus: 5,
@@ -154,6 +162,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.BOOK,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 0,
       valueIncrease: 8,
       sellingPriceBonus: 0,
@@ -171,6 +180,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.HOUSEHOLD,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 8,
       valueIncrease: 3,
       sellingPriceBonus: 5,
@@ -186,6 +196,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.HOUSEHOLD,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 0,
       valueIncrease: 5,
       sellingPriceBonus: 0,
@@ -203,6 +214,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.MATERIAL,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 10,
       valueIncrease: 5,
       sellingPriceBonus: 5,
@@ -218,6 +230,7 @@ export const expertiseSkills: ExpertiseSkill[] = [
     category: ItemCategory.MATERIAL,
     level: ExpertiseLevel.BEGINNER,
     bonus: {
+      expertiseMultiplier: expertiseLevelMultipliers[ExpertiseLevel.BEGINNER],
       appraisalAccuracy: 0,
       valueIncrease: 12,
       sellingPriceBonus: 0,
@@ -246,9 +259,9 @@ export function getSkillById(skillId: string): ExpertiseSkill | undefined {
  * 레벨별 업그레이드 비용 (경험치)
  */
 export const skillUpgradeCosts = {
-  'beginner': 0,
-  'apprentice': 100,
-  'proficient': 300,
-  'expert': 800,
-  'master': 2000
+  [ExpertiseLevel.BEGINNER]: 0,
+  [ExpertiseLevel.AMATEUR]: 100,
+  [ExpertiseLevel.INTERMEDIATE]: 200,
+  [ExpertiseLevel.EXPERT]: 800,
+  [ExpertiseLevel.MASTER]: 2000
 };

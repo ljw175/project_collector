@@ -65,7 +65,7 @@ const AuctionTest: React.FC = () => {
       setAuctionId(newAuctionId);
       
       // 초기 입찰액 설정
-      const basePrice = selectedItem.isAppraised ? selectedItem.actualValue : selectedItem.baseValue;
+      const basePrice = selectedItem.isAppraised ? selectedItem.convertedActualValue : selectedItem.convertedBaseValue;
       const startingBid = Math.max(50, Math.floor(basePrice * 0.5));
       setManualBidAmount(startingBid.toString());
     }
@@ -186,7 +186,8 @@ const AuctionTest: React.FC = () => {
   
   // 예상 판매가 계산 (더미 구현, 실제로는 서비스에서 구현)
   const estimateSalePrice = (item: Item) => {
-    const basePrice = item.isAppraised ? item.actualValue : item.baseValue;
+    const basePrice = item.isAppraised ? item.convertedActualValue : item.convertedBaseValue;
+    // 예시로 기본 가치의 80% ~ 120% 범위로 설정
     return {
       min: Math.floor(basePrice * 0.8),
       average: basePrice,
@@ -200,7 +201,7 @@ const AuctionTest: React.FC = () => {
         <Link to="/dev" className="back-button">← 테스트 메뉴로</Link>
         <h1>경매 시스템 테스트</h1>
         <div className="player-coins">
-          <span>보유 코인: {player.coins}</span>
+          <span>보유 자금: {player.coins}</span>
         </div>
       </header>
       
@@ -269,11 +270,11 @@ const AuctionTest: React.FC = () => {
                   {items.filter(item => item.isAppraised).map(item => (
                     <div 
                       key={item.id} 
-                      className={`item-card ${selectedItem?.id === item.id ? 'selected' : ''}`} 
+                      className={`item-card ${selectedItem === item.id ? 'selected' : '' }`} 
                       onClick={() => setSelectedItem(item)}
                     >
                       <div className="item-name">{item.name}</div>
-                      <div className="item-value">{item.actualValue || item.baseValue} 코인</div>
+                      <div className="item-value">{item.actualValue[0].amount || item.baseValue[0].amount} 금화 {item.actualValue[1].amount || item.baseValue[1].amount} 은화 {item.actualValue[2].amount || item.baseValue[2].amount} 동화 </div>
                     </div>
                   ))}
                 </div>

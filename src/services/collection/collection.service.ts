@@ -7,8 +7,8 @@ import {
   getActiveEvents, 
   getEventById,
   getRarityMultiplier
-} from '@data/events/collection-events';
-import { generateRandomItem } from '@data/items/common-items';
+} from '@/data/events/collection-events';
+import { generateRandomItem } from '@/data/items/common-items';
 import { Item, ItemCategory } from '@models/item';
 import { 
   CollectionEvent, 
@@ -68,15 +68,14 @@ export class CollectionService {
       const item = generateRandomItem(category);
       
       // 품질에 따른 가치 조정
-      item.baseValue = Math.floor(item.baseValue * quality);
+      item.convertedBaseValue = Math.floor(item.convertedBaseValue * quality);
       
       // 발견 결과 생성
       const discoveryResult: ItemDiscoveryResult = {
         item,
         quantity: 1,
         isRare: quality > 1.5,
-        discoveryText: this.generateDiscoveryText(item, quality),
-        cost: event.siteType === 'shop' ? Math.floor(item.baseValue * 0.8) : undefined
+        discoveryText: this.generateDiscoveryText(item, quality)
       };
       
       results.push(discoveryResult);

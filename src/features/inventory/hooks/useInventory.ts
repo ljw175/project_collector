@@ -5,7 +5,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { useGameState } from '@store/gameContext';
 import { Item, isAppraised } from '@models/item';
 import { InventoryFilter, InventorySortOption } from '../types/inventory_types';
-import { inventoryService } from '@/services/inventory';
+import { inventoryService } from '@/services/inventory/inventory_service_index';
 
 export function useInventory() {
   const { state, dispatch } = useGameState();
@@ -103,7 +103,7 @@ export function useInventory() {
     const item = state.inventory.find(item => item.id === itemId);
     if (!item || item.isAppraised) return;
 
-    dispatch({ type: 'APPRAISE_ITEM', payload: { itemId, discoveredTags: [], actualValue: 0, condition: 0, tool: 'none' } });
+    dispatch({ type: 'APPRAISE_ITEM', payload: { itemId, discoveredTags: [], actualValue: [], convertedActualValue: 0, condition: 0, tool: 'none' } });
   }, [dispatch]);
   
   // 인벤토리 총 가치 계산

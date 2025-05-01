@@ -5,7 +5,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useGameState } from '@store/gameContext';
 import { Item } from '@models/item';
 import { AppraisalOptions, AppraisalResult, AppraisalState } from '../types/appraisal_types';
-import { appraisalService } from '@/services/appraisal';
+import { appraisalService } from '@/services/appraisal/appraisal_service_index';
 import { ExpertiseLevel } from '@/models';
 import { expertiseSkills } from '@/data/expertise/skills';
 
@@ -129,6 +129,7 @@ export function useAppraisal() {
       payload: {
         itemId: item.id,
         discoveredTags: appraisalResult.discoveredTags.map(tag => String(tag)),
+        convertedActualValue: appraisalResult.convertedActualValue,
         actualValue: appraisalResult.actualValue,
         condition: appraisalResult.condition,
         tool: options.tool,
@@ -169,6 +170,7 @@ export function useAppraisal() {
       payload: {
         itemId: item.id,
         discoveredTags: quickResult.discoveredTags.map(tag => String(tag)),
+        convertedActualValue: quickResult.convertedActualValue,
         actualValue: quickResult.actualValue,
         condition: quickResult.condition,
         history: quickResult.history,

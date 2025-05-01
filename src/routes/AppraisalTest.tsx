@@ -181,7 +181,7 @@ const AppraisalTest: React.FC = () => {
                 <div className="item-details">
                   <div className="item-header">
                     <h3>{currentItem.name}</h3>
-                    <div className="item-base-value">{currentItem.baseValue} 코인 (기본가)</div>
+                    <div className="item-base-value">{currentItem.baseValue[0].amount} 금화 {currentItem.baseValue[1].amount} 은화 {currentItem.baseValue[2].amount} 동화</div>
                   </div>
                   
                   <p className="item-description">{currentItem.description}</p>
@@ -249,7 +249,7 @@ const AppraisalTest: React.FC = () => {
                     
                     {isComplete && result && (
                       <div className="result-details">
-                        <p>실제 가치: {result.actualValue} 코인</p>
+                        <p>실제 가치: {result.actualValue[0].amount} 금화 {result.actualValue[1].amount} 은화 {result.actualValue[2].amount} 동화 </p>
                         <p>상태: {result.condition}%</p>
                         <p>소요 시간: {result.timeSpent}초</p>
                       </div>

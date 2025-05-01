@@ -26,6 +26,7 @@ export class AuctionService {
    * 경매 NPC 참가자 목록 가져오기
    */
   getAuctionNpcs(): AuctionParticipant[] {
+    // NPC 참가자 목록을 가져옵니다.
     return auctionNpcs;
   }
   
@@ -75,7 +76,7 @@ export class AuctionService {
   private calculateStartingBid(item: Item): number {
     // 기본 가치의 60-80%를 시작가로 설정
     const valueMultiplier = 0.6 + Math.random() * 0.2;
-    const baseValue = item.isAppraised ? item.actualValue : item.baseValue;
+    const baseValue = item.isAppraised ? item.convertedActualValue : item.convertedBaseValue;
     return Math.floor(baseValue * valueMultiplier);
   }
   
@@ -154,16 +155,16 @@ export class AuctionService {
     // 관심 카테고리가 아니면 입찰 확률 낮춤
     const isInterestedCategory = npc.interestCategories?.includes(currentItem.item.category);
     const bidProbability = isInterestedCategory 
-      ? bidStrategyModifiers[npc.bidStrategy || 'balanced'].bidProbability
-      : bidStrategyModifiers[npc.bidStrategy || 'balanced'].bidProbability * 0.5;
+      ? bidStrategyModifiers[npc.id].bidProbability
+      : bidStrategyModifiers[npc.id].bidProbability * 0.5;
     
     // 입찰 확률 체크
     if (Math.random() > bidProbability) return null;
     
     // 입찰 금액 계산
     const minIncrement = Math.max(10, currentRound.currentHighestBid * 0.05);
-    const strategy = npc.bidStrategy || 'balanced';
-    const modifiers = bidStrategyModifiers[strategy];
+    // 증액 배수 가져오기
+    const modifiers = bidStrategyModifiers[npc.id];
     
     // 증액 범위 계산
     const incrementMultiplier = modifiers.minIncrementMultiplier + 

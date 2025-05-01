@@ -8,19 +8,19 @@ import {
   getSkillById,
   skillUpgradeCosts,
   expertiseLevelMultipliers 
-} from '@data/expertise/skills.ts';
+} from '@/data/expertise/skills.ts';
 import { 
   contacts, 
   getContactById, 
   getContactsByCategory, 
   getUnlockedContacts 
-} from '@data/expertise/contacts.ts';
+} from '@/data/expertise/contacts.ts';
 import { 
   reputationEvents, 
   getEventsByContactId, 
   getAvailableEvents, 
   getEventById 
-} from '@data/expertise/events.ts';
+} from '@/data/expertise/events.ts';
 import { ItemCategory } from '@models/item';
 import { ExpertiseLevel, Reputation } from '@models/player';
 import { ExpertiseSkill, ReputationEvent } from '@features/expertise/types/expertise_types';

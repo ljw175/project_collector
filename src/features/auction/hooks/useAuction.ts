@@ -10,7 +10,7 @@ import {
   BidRecord, 
   AuctionRound 
 } from '../types/auction_types';
-import { auctionService } from '@/services/auction';
+import { auctionService } from '@/services/auction/auction_service_index';
 
 export function useAuction() {
   const { state, dispatch } = useGameState();

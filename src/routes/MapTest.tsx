@@ -26,8 +26,9 @@ const MapTest: React.FC = () => {
   // 이동 관련 상태
   const [travelResult, setTravelResult] = useState<{ 
     success: boolean; 
-    cost: { money: number; timeDays: number; fatigue: number }; 
-    message: string 
+    cost: { money: number; time: number; fatigue: number }; 
+    message: string;
+    currentLocationId: string;
   } | null>(null);
   
   // 특정 활동 필터
@@ -68,7 +69,7 @@ const MapTest: React.FC = () => {
   // 새 장소 발견 (테스트용)
   const handleDiscoverLocation = (locationId: string) => {
     const updated = discoverLocation(locationId);
-    console.log(`새 장소를 발견했습니다: ${updated?.find(l => l.id === locationId)?.name}`);
+    console.log(`새 장소를 발견했습니다: ${updated?.name}`);
   };
   
   // 로딩 화면

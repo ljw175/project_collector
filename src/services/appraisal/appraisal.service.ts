@@ -2,7 +2,7 @@
  * 감정(Appraisal) 관련 서비스
  * 아이템 감정 로직과 결과 계산을 관리합니다.
  */
-import { Item, ItemTag, ItemCategory } from '@models/item';
+import { Item, ItemTag, ItemCategory, ValueCurrency } from '@models/item';
 import { Player, ExpertiseLevel } from '@models/player';
 import { 
   AppraisalOptions, 
@@ -16,6 +16,7 @@ import {
   valueEstimationErrors
 } from '@/data/constants/appraisal-constants';
 import { expertiseSkills, expertiseLevelMultipliers } from '@/data/expertise/skills';
+import { ValueCurrencies } from '@/data/items/common-items';
 import { ExpertiseSkill } from '@features/expertise/types/expertise_types';
 
 /**
@@ -42,10 +43,10 @@ export class AppraisalService {
     playerExpertise: any = {}
   ): number {
     // 카테고리별 기본 시간
-    let baseTime = baseCategoryAppraisalTimes[item.category] || 30;
+    let baseTime = baseCategoryAppraisalTimes[item.category];
     
     // 꼼꼼함 정도에 따른 시간 조정
-    const thoroughnessMultiplier = appraisalTimeMultipliers[options.thoroughness] || 1.0;
+    const thoroughnessMultiplier = appraisalTimeMultipliers[options.thoroughness];
     
     // 특수 도구 사용 시 시간 절약
     let toolMultiplier = 1.0;
@@ -66,10 +67,8 @@ export class AppraisalService {
     if (playerExpertise.skills) {
       const appraisalSkill = this.getAppraisalSkillForCategory(item.category, playerExpertise.skills);
       if (appraisalSkill) {
-        // 전문성 레벨에 따른 시간 절약 (레벨이 높을수록 빠르게 감정)
-        const levelKey = ExpertiseLevel[appraisalSkill.level].toLowerCase() as keyof typeof expertiseLevelMultipliers;
-        const levelMultiplier = 1 / (expertiseLevelMultipliers[levelKey] || 1);
-        expertiseMultiplier = Math.max(0.6, levelMultiplier); // 최대 40% 시간 절약
+        // 전문성 레벨에 따른 시간 절약 배수 참조/적용
+        expertiseMultiplier = 1 / appraisalSkill.bonus.expertiseMultiplier || 1.0;
       }
     }
     
@@ -111,9 +110,7 @@ export class AppraisalService {
         expertiseBonus += appraisalSkill.bonus.appraisalAccuracy / 100;
 
         // 전문성 레벨에 따른 추가 보너스
-        const levelKey = ExpertiseLevel[appraisalSkill.level].toLowerCase() as keyof typeof expertiseLevelMultipliers;
-        const levelMultiplier = expertiseLevelMultipliers[levelKey] || 1;
-        expertiseBonus *= levelMultiplier;
+        expertiseBonus *= expertiseLevelMultipliers[appraisalSkill.level] || 1;
       }
     }
     
@@ -153,13 +150,13 @@ export class AppraisalService {
   /**
    * 실제 가치 계산
    */
-  calculateActualValue(
+  calculateConvertedActualValue(
     item: Item,
     discoveredTags: ItemTag[],
     options: AppraisalOptions,
     playerExpertise: any = {}
   ): number {
-    let value = item.baseValue;
+    let value = item.convertedBaseValue || 0;
     
     // 태그에 따른 가치 수정
     discoveredTags.forEach(tag => {
@@ -174,8 +171,8 @@ export class AppraisalService {
         const valueIncreasePercent = appraisalSkill.bonus.valueIncrease / 100;
         
         // 레벨에 따른 추가 보너스
-        const levelKey = ExpertiseLevel[appraisalSkill.level].toLowerCase() as keyof typeof expertiseLevelMultipliers;
-        const levelMultiplier = expertiseLevelMultipliers[levelKey] || 1;
+        let levelMultiplier = 1;
+        levelMultiplier += appraisalSkill.level * 0.05; // 레벨당 5% 증가
         
         // 최종 가치 보너스 적용
         value *= (1 + (valueIncreasePercent * levelMultiplier));
@@ -206,6 +203,28 @@ export class AppraisalService {
   }
   
   /**
+   * 실제 가치 통화로 변환
+   */
+  convertToActualValue(
+    convertedValue: number,
+    currency: ValueCurrency[] = [ValueCurrencies[0], ValueCurrencies[1], ValueCurrencies[2]], // 통화 단위 (골드, 은화 등)
+  ): Array<{ currency: ValueCurrency, amount: number }> {
+    // 통화 단위에 따라 환산
+    const goldAmount = Math.floor(convertedValue / currency[0].exchangeRate);
+    convertedValue = Math.floor(convertedValue % currency[0].exchangeRate);
+    const silverAmount = Math.floor(convertedValue / currency[1].exchangeRate);
+    convertedValue = Math.floor(convertedValue % currency[1].exchangeRate);
+    const copperAmount = convertedValue;
+
+    let actualValue = [
+      { currency: currency[0], amount: goldAmount },
+      { currency: currency[1], amount: silverAmount },
+      { currency: currency[2], amount: copperAmount }
+    ];
+    return actualValue;
+  }
+
+  /**
    * 완전한 감정 결과 생성
    */
   generateFullAppraisalResult(
@@ -220,8 +239,11 @@ export class AppraisalService {
     const discoveredTags = this.generateDiscoveredTags(item, accuracy);
     
     // 실제 가치 계산 (스킬 보너스 적용)
-    const actualValue = this.calculateActualValue(item, discoveredTags, options, playerExpertise);
+    const convertedActualValue = this.calculateConvertedActualValue(item, discoveredTags, options, playerExpertise);
     
+    // 실제 가치 계산 (통화로 변환)
+    const actualValue = this.convertToActualValue(convertedActualValue);
+
     // 조건 점수 계산
     const condition = this.calculateConditionScore(item, accuracy);
     
@@ -236,6 +258,7 @@ export class AppraisalService {
       itemId: item.id,
       discoveredTags,
       actualValue,
+      convertedActualValue,
       condition,
       timeSpent,
       history
@@ -255,7 +278,7 @@ export class AppraisalService {
       return (item as any).history;
     }
     
-    // 정확도와 전문성에 따라 이력 생성 확률 계산
+    // 정확도와 전문성에 따라 이력 생성 정도 계산
     let historyGenerationChance = accuracy;
     
     // 전문성 보너스 적용
@@ -263,9 +286,9 @@ export class AppraisalService {
       const appraisalSkill = this.getAppraisalSkillForCategory(item.category, playerExpertise.skills);
       if (appraisalSkill) {
         // 레벨에 따른 확률 증가
-        const levelKey = ExpertiseLevel[appraisalSkill.level].toLowerCase() as keyof typeof expertiseLevelMultipliers;
-        const levelMultiplier = expertiseLevelMultipliers[levelKey] || 1;
-        historyGenerationChance += (0.1 * levelMultiplier); // 레벨당 최대 10% 확률 증가
+        let levelMultiplier = 1;
+        levelMultiplier += appraisalSkill.level * 0.1; // 레벨당 최대 10% 확률 증가
+        historyGenerationChance += levelMultiplier; // 최대 1.0까지 증가
       }
     }
     
@@ -372,10 +395,13 @@ export class AppraisalService {
     // 발견된 태그
     const discoveredTags = this.generateDiscoveredTags(item, accuracy);
     
-    // 가치 계산 (실제 가치보다 약간 낮게 추정)
-    const actualValue = Math.round(
-      this.calculateActualValue(item, discoveredTags, quickOptions, playerExpertise) * 0.9
+    // 가치 계산
+    const convertedActualValue = Math.round(
+      this.calculateConvertedActualValue(item, discoveredTags, quickOptions, playerExpertise)
     );
+
+    // 실제 가치 계산 (통화로 변환)
+    const actualValue = this.convertToActualValue(convertedActualValue);
     
     // 상태 점수
     const condition = this.calculateConditionScore(item, accuracy);
@@ -390,6 +416,7 @@ export class AppraisalService {
       itemId: item.id,
       discoveredTags,
       actualValue,
+      convertedActualValue,
       condition,
       timeSpent: 5, // 빠른 감정은 항상 5초로 고정
       history
@@ -407,7 +434,7 @@ export class AppraisalService {
     let baseCost = 50;
     
     // 아이템 기본 가치에 따른 추가 비용
-    const valueModifier = Math.floor(item.baseValue / 1000);
+    const valueModifier = Math.floor(item.convertedBaseValue / 1000);
     baseCost += valueModifier * 10;
     
     // 꼼꼼함에 따른 비용 조정

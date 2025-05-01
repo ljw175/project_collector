@@ -85,7 +85,7 @@ export interface MapEvent {
 // 이동 비용 인터페이스
 export interface TravelCost {
   money: number;               // 이동 비용 (골드)
-  timeDays: number;            // 소요 시간 (일)
+  time: number;            // 소요 시간 (초)
   fatigue: number;             // 피로도 증가
 }
 

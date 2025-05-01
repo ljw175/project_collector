@@ -11,7 +11,7 @@ import {
   MapEventType
 } from '../types/map_types';
 import { Traveler, TravelerUpdate } from '../types/map_service_types';
-import { mapService } from '@services/map';
+import { mapService } from '@/services/map/map_service_index';
 
 export function useMap() {
   const { state, dispatch } = useGameState();
@@ -86,7 +86,7 @@ export function useMap() {
     // 플레이어 상태 가져오기 - Traveler 인터페이스 사용
     const traveler: Traveler = {
       money: state.player.money || 1000,
-      energy: state.player.status.maxFatigue - (state.player.status.fatigue || 0), // 피로도의 반대값을 에너지로 사용
+      fatigue: state.player.status.maxFatigue - (state.player.status.fatigue || 0), // 피로도의 반대값을 에너지로 사용
       locationId: mapState.currentLocationId
     };
     
@@ -110,10 +110,9 @@ export function useMap() {
           dispatch({ type: 'SET_MENTAL', payload: updates.mental });
         }
 
-        if (updates.energy !== undefined) {
-          // 에너지 값을 피로도로 변환하여 저장
-          const newFatigue = state.player.status.maxFatigue - updates.energy;
-          dispatch({ type: 'SET_FATIGUE', payload: newFatigue });
+        if (updates.fatigue !== undefined) {
+          // 피로도를 업데이트하여 저장
+          dispatch({ type: 'SET_FATIGUE', payload: updates.fatigue });
         }
         
         if (updates.money !== undefined) {

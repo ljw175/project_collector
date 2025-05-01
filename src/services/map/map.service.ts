@@ -15,7 +15,7 @@ import {
   gameLocations, 
   mapEvents, 
   calculateTravelCost 
-} from '@data/constants/map-constants';
+} from '@/data/constants/map-constants';
 
 /**
  * 지도 서비스 클래스
@@ -109,7 +109,7 @@ export class MapService {
     return {
       time,
       money,
-      energy: Math.round(time * 10) // 시간당 10 에너지 소모
+      fatigue: Math.round(time * 1) // 시간당 1 피로 증가
     };
   }
   
@@ -152,7 +152,7 @@ export class MapService {
     const cost = this.calculateTravelCost(fromId, toId);
     
     // 충분한 에너지가 있는지 확인
-    if (player.energy < cost.energy) {
+    if (player.fatigue < cost.fatigue) {
       return { canTravel: false, reason: '에너지가 부족합니다.' };
     }
     
@@ -177,9 +177,11 @@ export class MapService {
     const canTravel = this.canTravelTo(fromId, toId, player);
     if (!canTravel.canTravel) {
       return { 
-        success: false, 
+        success: false,
         message: canTravel.reason || '이동할 수 없습니다.',
-        cost: null
+        cost: { time: 0, money: 0, fatigue: 0 },
+        currentLocationId: fromId,
+        travelTime: 0
       };
     }
     
@@ -188,8 +190,8 @@ export class MapService {
     
     // 플레이어 상태 업데이트
     updatePlayerCallback({
-      currentLocationId: toId,
-      energy: player.energy - cost.energy,
+      locationId: toId,
+      fatigue: player.fatigue - cost.fatigue,
       money: player.money - cost.money
     });
     
@@ -198,8 +200,10 @@ export class MapService {
     
     return {
       success: true,
-      message: `${destination?.name || toId}(으)로 이동했습니다.`,
-      cost
+      cost,
+      message: `이동 성공! ${destination?.name}에 도착했습니다.`,
+      currentLocationId: toId,
+      travelTime: cost.time
     };
   }
   
@@ -215,7 +219,7 @@ export class MapService {
    */
   getActiveEvents(currentDay: number): MapEvent[] {
     return mapEvents.filter(
-      event => event.startDay <= currentDay && event.endDay >= currentDay
+      event => event.startDay <= currentDay && (event.startDay + event.duration) >= currentDay
     );
   }
   
@@ -233,7 +237,7 @@ export class MapService {
    */
   updateEventsActiveStatus(currentDay: number): MapEvent[] {
     mapEvents.forEach(event => {
-      event.isActive = (event.startDay <= currentDay && event.endDay >= currentDay);
+      event.isActive = (event.startDay <= currentDay && (event.startDay + event.duration) >= currentDay);
     });
     
     return this.getActiveEvents(currentDay);

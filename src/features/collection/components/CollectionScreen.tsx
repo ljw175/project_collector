@@ -311,7 +311,6 @@ const CollectionScreen: React.FC = () => {
       description: item.description,
       category: item.category,
       isRare: result ? result.isRare : false,
-      cost: result ? result.cost : undefined,
       discoveryText: result ? result.discoveryText : undefined
     };
   });
@@ -319,10 +318,7 @@ const CollectionScreen: React.FC = () => {
   // 결과 요약 계산
   const summary = {
     itemsFound: discoveredItems.length,
-    rareItemsFound: collectionResults.filter(r => r.isRare).length,
-    totalCost: collectionResults
-      .filter(r => selectedItemIds.includes(r.item.id) && r.cost !== undefined)
-      .reduce((sum, r) => sum + (r.cost || 0), 0)
+    rareItemsFound: collectionResults.filter(r => r.isRare).length
   };
 
   return (
@@ -424,7 +420,6 @@ const CollectionScreen: React.FC = () => {
               <CollectionSummary 
                 itemsFound={summary.itemsFound}
                 rareItemsFound={summary.rareItemsFound}
-                totalCost={summary.totalCost}
                 onClose={handleCloseSummary}
               />
             </div>

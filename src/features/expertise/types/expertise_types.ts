@@ -12,6 +12,7 @@ export interface ExpertiseSkill {
   category: ItemCategory;
   level: ExpertiseLevel;
   bonus: {
+    expertiseMultiplier: number; // 전문성에 따른 시간 절약 보너스(배수)
     appraisalAccuracy: number;    // 감정 정확도 보너스
     valueIncrease: number;        // 가치 증가율
     sellingPriceBonus: number;    // 판매 가격 보너스

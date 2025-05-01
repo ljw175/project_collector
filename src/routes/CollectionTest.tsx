@@ -237,9 +237,6 @@ const CollectionTest: React.FC = () => {
                   <h3 className={`item-name ${result.isRare ? 'rare' : ''}`}>
                     {result.item.name}
                   </h3>
-                  {result.cost && (
-                    <span className="item-cost">{result.cost} 골드</span>
-                  )}
                 </div>
                 <p className="item-description">{result.item.description}</p>
                 <p className="discovery-text">{result.discoveryText}</p>
@@ -248,7 +245,7 @@ const CollectionTest: React.FC = () => {
                     {result.item.category}
                   </span>
                   <span className="item-value">
-                    가치: {result.item.baseValue} 골드
+                    가치: {result.item.baseValue[0].amount} 금화 {result.item.baseValue[1].amount} 은화 {result.item.baseValue[2].amount} 동화
                   </span>
                 </div>
                 <div className="item-selection">

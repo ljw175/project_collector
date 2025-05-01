@@ -41,7 +41,6 @@ export interface ItemDiscoveryResult {
   quantity: number;
   isRare: boolean;
   discoveryText: string;
-  cost?: number;
 }
 
 // 수집 옵션

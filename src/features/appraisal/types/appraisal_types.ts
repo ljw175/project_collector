@@ -2,13 +2,14 @@
  * 감정(Appraisal) 관련 타입 정의
  */
 import { ExpertiseLevel } from '@/models';
-import { ItemCategory, ItemTag } from '@models/item';
+import { ItemCategory, ItemTag, Value } from '@models/item';
 
 // 감정 결과 타입
 export interface AppraisalResult {
   itemId: string;
   discoveredTags: ItemTag[];
-  actualValue: number;
+  actualValue: Value[]; // 실제 가치 (감정 후)
+  convertedActualValue: number; // 환산 가치 (실제 가치의 총합)
   condition: number;
   history?: string;
   timeSpent: number; // 감정에 소요된 시간

@@ -14,12 +14,26 @@ export type ItemTag = {
   isHidden: boolean;       // 감정되지 않은 태그인지 여부
 };
 
+export type ValueCurrency = {
+  id: string;             // 통화 ID
+  name: string;           // 통화 이름
+  symbol: string;         // 통화 기호 (예: $, €, ¥ 등)
+  exchangeRate: number;   // 다른 통화와의 환율 (예: 1 골드 = 100 은화)
+  icon: string;           // 통화 아이콘 경로
+}; // 통화 단위 (예: 골드, 은화 등)
+
+export type Value = {
+  currency: ValueCurrency;
+  amount: number;
+};
+
 // 아이템 기본 타입
 export interface BaseItem {
   id: string;
   name: string;
   description: string;
-  baseValue: number;      // 기본 가치
+  baseValue: Value[];      // 기본 가치
+  convertedBaseValue: number; // 환산 가치 (기본 가치의 총합)
   category: ItemCategory; // 카테고리
   isAppraised: boolean;   // 감정 여부
   quantity: number;       // 수량 (스택)
@@ -40,7 +54,8 @@ export enum ItemCategory {
 // 감정된 아이템
 export interface AppraisedItem extends BaseItem {
   isAppraised: true;
-  actualValue: number;    // 실제 가치 (감정 후)
+  actualValue: Value[];    // 실제 가치 (감정 후)
+  convertedActualValue: number; // 환산 가치 (실제 가치의 총합)
   condition: number;      // 상태 (0-100)
   hiddenTags: ItemTag[];  // 감정된 숨겨진 태그들
   history?: string;       // 아이템 이력
@@ -49,7 +64,9 @@ export interface AppraisedItem extends BaseItem {
 // 감정되지 않은 아이템
 export interface UnappraisedItem extends BaseItem {
   isAppraised: false;
-  hiddenTags: ItemTag[];  // 감정되지 않은 숨겨진 태그들
+  hiddenTags?: ItemTag[];  // 감정되지 않은 숨겨진 태그들
+  baseValue: Value[];      // 기본 가치
+  convertedBaseValue: number; // 환산 가치 (기본 가치의 총합)
 }
 
 // 아이템의 타입 가드 함수

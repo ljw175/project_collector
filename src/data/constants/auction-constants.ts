@@ -19,7 +19,7 @@ export const bidStrategyModifiers: Record<string, BidStrategy> = {
       bidProbability: 0.4           // 40% 확률로 입찰 시도
     },
     'unpredictable': {
-      minIncrementMultiplier: 0.05, // 최소 5% 증가
+      minIncrementMultiplier: -0.1, // 최소 10% 감소
       maxIncrementMultiplier: 0.3,  // 최대 30% 증가
       bidProbability: 0.5           // 50% 확률로 입찰 시도
     },

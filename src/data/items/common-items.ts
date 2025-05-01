@@ -1,8 +1,38 @@
 /**
  * 테스트 및 기본 아이템 데이터
  */
-import { ItemTag, Item, ItemCategory, BaseItem, AppraisedItem } from '@models/item';
+import { ItemTag, Item, ItemCategory, BaseItem, AppraisedItem, UnappraisedItem, Value, ValueCurrency } from '@models/item';
 import { generateRandomTags } from './item-tags';
+
+/**
+ * 테스트용 가치 통화 목록
+ */
+
+export const ValueCurrencies: ValueCurrency[] = [
+  {
+    id: 'gold',
+    name: '금화',
+    symbol: 'G',
+    exchangeRate: 10000,
+    icon: '/assets/icons/currencies/gold.png'
+  },
+  {
+    id: 'silver',
+    name: '은화',
+    symbol: 'S',
+    exchangeRate: 100,
+    icon: '/assets/icons/currencies/silver.png'
+  },
+  {
+    id: 'copper',
+    name: '동화',
+    symbol: 'C',
+    exchangeRate: 1,
+    icon: '/assets/icons/currencies/copper.png'
+  }
+];
+
+
 
 /**
  * 테스트용 기본 아이템 목록
@@ -13,8 +43,10 @@ export const testItems: Item[] = [
     name: '오래된 은단검',
     description: '고대 장인이 만든 것으로 보이는 섬세한 무늬가 새겨진 은단검입니다.',
     condition: 100,
-    baseValue: 150,
-    actualValue: 375, // 감정 완료 상태
+    baseValue: [{ currency: ValueCurrencies[0], amount: 2 }, { currency: ValueCurrencies[1], amount: 50 }, { currency: ValueCurrencies[2], amount: 10 }],
+    convertedBaseValue: 25000, // 환산 가치
+    actualValue: [{ currency: ValueCurrencies[0], amount: 3 }, { currency: ValueCurrencies[1], amount: 75 }, { currency: ValueCurrencies[2], amount: 15 }],
+    convertedActualValue: 37515, // 감정 완료 상태 환산 가치
     isAppraised: true,
     category: ItemCategory.WEAPON,
     quantity: 1,
@@ -36,7 +68,8 @@ export const testItems: Item[] = [
     id: 'test-item-2',
     name: '깨진 청동 거울',
     description: '부분적으로 깨진 청동 거울로, 뒷면에 독특한 문양이 새겨져 있습니다.',
-    baseValue: 80,
+    baseValue: [{ currency: ValueCurrencies[0], amount: 1 }, { currency: ValueCurrencies[1], amount: 10 }, { currency: ValueCurrencies[2], amount: 5 }],
+    convertedBaseValue: 11005, // 환산 가치
     isAppraised: false,
     category: ItemCategory.HOUSEHOLD,
     quantity: 1,
@@ -58,7 +91,8 @@ export const testItems: Item[] = [
     id: 'test-item-3',
     name: '금도금 반지',
     description: '순금으로 얇게 도금된 반지입니다. 작은 보석이 박혀 있습니다.',
-    baseValue: 200,
+    baseValue: [{ currency: ValueCurrencies[0], amount: 5 }, { currency: ValueCurrencies[1], amount: 20 }, { currency: ValueCurrencies[2], amount: 2 }],
+    convertedBaseValue: 52002, // 환산 가치
     isAppraised: false,
     category: ItemCategory.JEWELRY,
     quantity: 1,
@@ -80,7 +114,8 @@ export const testItems: Item[] = [
     id: 'test-item-4',
     name: '구리 동전',
     description: '오래된 구리 동전으로, 표면에 마모된 형상이 있습니다.',
-    baseValue: 5,
+    baseValue: [{ currency: ValueCurrencies[0], amount: 0 }, { currency: ValueCurrencies[1], amount: 0 }, { currency: ValueCurrencies[2], amount: 1 }],
+    convertedBaseValue: 1, // 환산 가치
     isAppraised: false,
     category: ItemCategory.MATERIAL,
     quantity: 12,
@@ -92,8 +127,10 @@ export const testItems: Item[] = [
     name: '낡은 책',
     description: '표지가 닳은 오래된 책으로, 희미하게 문자를 읽을 수 있습니다.',
     condition: 80,
-    baseValue: 50,
-    actualValue: 65,
+    baseValue: [{ currency: ValueCurrencies[0], amount: 0 }, { currency: ValueCurrencies[1], amount: 5 }, { currency: ValueCurrencies[2], amount: 0 }],
+    convertedBaseValue: 500, // 환산 가치
+    actualValue: [{ currency: ValueCurrencies[0], amount: 0 }, { currency: ValueCurrencies[1], amount: 10 }, { currency: ValueCurrencies[2], amount: 0 }],
+    convertedActualValue: 1000, // 감정 완료 상태
     isAppraised: true,
     category: ItemCategory.BOOK,
     quantity: 1,
@@ -166,7 +203,7 @@ export const categoryValueRanges: Record<ItemCategory, { min: number, max: numbe
  * 랜덤 아이템 생성 함수
  * 수집 이벤트 등에서 사용
  */
-export function generateRandomItem(category?: ItemCategory): BaseItem {
+export function generateRandomItem(category?: ItemCategory): UnappraisedItem {
   // 카테고리가 지정되지 않은 경우 랜덤 선택
   const itemCategory = category || Object.values(ItemCategory)[
     Math.floor(Math.random() * Object.values(ItemCategory).length)
@@ -210,11 +247,13 @@ export function generateRandomItem(category?: ItemCategory): BaseItem {
     id,
     name: itemName,
     description,
-    baseValue,
+    baseValue: [{ currency: ValueCurrencies[0], amount: baseValue }, { currency: ValueCurrencies[1], amount: baseValue }, { currency: ValueCurrencies[2], amount: baseValue }],
+    convertedBaseValue: baseValue * ValueCurrencies[0].exchangeRate + baseValue * ValueCurrencies[1].exchangeRate + baseValue * ValueCurrencies[2].exchangeRate, // 환산 가치
     category: itemCategory,
     isAppraised: false,
     quantity: 1,
-    tags: []
+    tags: [],
+    hiddenTags: [],
   };
 }
 

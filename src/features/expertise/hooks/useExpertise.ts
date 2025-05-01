@@ -11,7 +11,7 @@ import {
   ExpertiseState,
   ExperienceSource 
 } from '../types/expertise_types';
-import { expertiseService } from '@/services/expertise';
+import { expertiseService } from '@/services/expertise/expertise_service_index';
 
 export function useExpertise() {
   const { state, dispatch } = useGameState();

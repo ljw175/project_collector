@@ -9,7 +9,7 @@ import {
   CollectionOptions, 
   ItemDiscoveryResult 
 } from '../types/collection_types';
-import { collectionService } from '@/services/collection';
+import { collectionService } from '@/services/collection/collection_service_index';
 
 export function useCollection() {
   const { state, dispatch } = useGameState();
@@ -115,15 +115,6 @@ export function useCollection() {
     itemsToAcquire.forEach(item => {
       dispatch({ type: 'ADD_ITEM', payload: item });
     });
-    
-    // 비용 지불 (필요한 경우)
-    const totalCost = collectionResults
-      .filter(result => selectedItemIds.includes(result.item.id) && result.cost)
-      .reduce((sum, result) => sum + (result.cost || 0), 0);
-    
-    if (totalCost > 0) {
-      dispatch({ type: 'UPDATE_MONEY', payload: -totalCost });
-    }
     
     // 결과 재설정
     setDiscoveredItems([]);
