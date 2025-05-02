@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/components.css';
+import '../styles/appraisal-test.css';
 import ItemSlot from '../components/ui/ItemSlot';
 import TagDisplay from '../components/ui/TagDisplay';
 import { useInventory } from '../features/inventory/hooks/useInventory';
@@ -141,23 +142,23 @@ const AppraisalTest: React.FC = () => {
         <Link to="/dev" className="back-button">← 테스트 메뉴로</Link>
         <h1>감정 시스템 테스트</h1>
         <div className="player-stats">
-          <span>소지금: {player.coins}코인</span>
+          <span className="player-coins">소지금: {player.coins}코인</span>
           <span>감정 포인트: {player.appraisalPoints}/3</span>
-          <button className="btn-small" onClick={resetPoints}>포인트 충전</button>
+          <button className="btn btn-sm" onClick={resetPoints}>포인트 충전</button>
         </div>
       </header>
       
       <main className="app-content">
         <div className="appraisal-container">
           {/* 인벤토리 섹션 */}
-          <div className="inventory-section">
-            <h2>감정할 아이템</h2>
-            <div className="item-grid">
+          <div className="unapprised-items">
+            <h2 className="unapprised-title">감정할 아이템</h2>
+            <div className="unapprised-list">
               {unappraisedItems.map(item => (
                 <div 
                   key={item.id}
+                  className={`unapprised-item ${selectedItemId === item.id ? 'selected' : ''}`}
                   onClick={() => handleSelectItem(item)}
-                  className={selectedItemId === item.id ? 'selected' : ''}
                 >
                   <ItemSlot 
                     item={item} 
@@ -167,8 +168,9 @@ const AppraisalTest: React.FC = () => {
               ))}
               
               {unappraisedItems.length === 0 && (
-                <div className="empty-notice">
-                  감정이 필요한 아이템이 없습니다.
+                <div className="empty-workspace">
+                  <div className="empty-icon">📦</div>
+                  <div className="empty-message">감정이 필요한 아이템이 없습니다.</div>
                 </div>
               )}
             </div>
@@ -178,82 +180,83 @@ const AppraisalTest: React.FC = () => {
           <div className="appraisal-workspace">
             {currentItem ? (
               <>
-                <div className="item-details">
-                  <div className="item-header">
-                    <h3>{currentItem.name}</h3>
-                    <div className="item-base-value">{currentItem.baseValue[0].amount} 금화 {currentItem.baseValue[1].amount} 은화 {currentItem.baseValue[2].amount} 동화</div>
+                <h2 className="workspace-title">아이템 감정</h2>
+                <div className="appraisal-item-details">
+                  <div className="item-image">
+                    아이템 이미지
                   </div>
-                  
-                  <p className="item-description">{currentItem.description}</p>
-                  
-                  <div className="item-specs">
-                    <div className="spec-item">
-                      <span className="label">카테고리:</span> 
-                      <span className="value">{currentItem.category}</span>
-                    </div>
-                    <div className="spec-item">
-                      <span className="label">감정 확률:</span> 
-                      <span className="value">{getAppraisalChanceText()}</span>
-                    </div>
+                  <div className="item-info">
+                    <h3 className="info-title">{currentItem.name}</h3>
+                    <div className="info-category">{currentItem.category}</div>
+                    <p className="info-description">{currentItem.description}</p>
+                    <div className="info-base-value">기본 가치: {currentItem.baseValue[0].amount} 금화 {currentItem.baseValue[1].amount} 은화 {currentItem.baseValue[2].amount} 동화</div>
                   </div>
                 </div>
                 
-                <div className="appraisal-options">
-                  <h4>감정 옵션</h4>
-                  <div className="option-row">
-                    <label>꼼꼼함:</label>
-                    <select 
-                      value={options.thoroughness} 
-                      onChange={(e) => handleChangeAppraisalOption('thoroughness', e.target.value)}
-                      disabled={isAppraising}
+                <div className="appraisal-process">
+                  <h4 className="process-title">감정 프로세스</h4>
+                  <div className="appraisal-controls">
+                    <div className="expertise-selector">
+                      <label className="expertise-label">감정 방법:</label>
+                      <select 
+                        className="expertise-dropdown"
+                        value={options.thoroughness} 
+                        onChange={(e) => handleChangeAppraisalOption('thoroughness', e.target.value)}
+                        disabled={isAppraising}
+                      >
+                        <option value="quick">빠르게 (50% 시간, 75% 정확도)</option>
+                        <option value="standard">표준 (100% 시간, 100% 정확도)</option>
+                        <option value="thorough">꼼꼼하게 (200% 시간, 125% 정확도)</option>
+                      </select>
+                    </div>
+                  
+                    <button 
+                      className="appraisal-button"
+                      onClick={handleAppraise}
+                      disabled={isAppraising || player.appraisalPoints <= 0 || appraisalState === 'complete'}
                     >
-                      <option value="quick">빠르게 (50% 시간, 75% 정확도)</option>
-                      <option value="standard">표준 (100% 시간, 100% 정확도)</option>
-                      <option value="thorough">꼼꼼하게 (200% 시간, 125% 정확도)</option>
-                    </select>
+                      {isAppraising ? '감정 중...' : '감정하기'} 
+                      {player.appraisalPoints > 0 ? ` (${player.appraisalPoints} 포인트)` : ' (포인트 부족)'}
+                    </button>
                   </div>
-                  
-                  <div className="option-row">
-                    <label>특수 도구 사용:</label>
-                    <input 
-                      type="checkbox" 
-                      checked={options.useSpecialTool || false}
-                      onChange={(e) => handleChangeAppraisalOption('useSpecialTool', e.target.checked)}
-                      disabled={isAppraising}
-                    />
-                    <span className="option-hint">정확도 15% 증가, 시간 30% 감소</span>
-                  </div>
-                </div>
-                
-                <div className="appraisal-actions">
-                  <button 
-                    className="btn btn-primary"
-                    onClick={handleAppraise}
-                    disabled={isAppraising || player.appraisalPoints <= 0 || appraisalState === 'complete'}
-                  >
-                    {isAppraising ? '감정 중...' : '감정하기'} 
-                    {player.appraisalPoints > 0 ? ` (${player.appraisalPoints} 포인트)` : ' (포인트 부족)'}
-                  </button>
                   
                   {isAppraising && (
-                    <button className="btn" onClick={cancelAppraisal}>
-                      취소
-                    </button>
+                    <div className="appraisal-animation">
+                      <div className="appraisal-progress">
+                        <div className="progress-bar"></div>
+                      </div>
+                    </div>
                   )}
                 </div>
                 
                 {/* 감정 결과 메시지 */}
                 {appraisalMessage && (
-                  <div className="appraisal-result">
+                  <div className={`appraisal-message ${isComplete ? 'message-success' : 'message-info'}`}>
                     <p>{appraisalMessage}</p>
+                  </div>
+                )}
+                
+                {isComplete && result && (
+                  <div className="appraisal-results">
+                    <h4 className="results-title">감정 결과</h4>
+                    <div className="discovered-tags">
+                      {result.discoveredTags.map(tag => (
+                        <TagDisplay key={tag.id} tag={tag} onClick={() => handleTagSelect(tag)} />
+                      ))}
+                      {result.discoveredTags.length === 0 && (
+                        <p>특별한 특성을 발견하지 못했습니다.</p>
+                      )}
+                    </div>
                     
-                    {isComplete && result && (
-                      <div className="result-details">
-                        <p>실제 가치: {result.actualValue[0].amount} 금화 {result.actualValue[1].amount} 은화 {result.actualValue[2].amount} 동화 </p>
-                        <p>상태: {result.condition}%</p>
-                        <p>소요 시간: {result.timeSpent}초</p>
-                      </div>
-                    )}
+                    <div className="appraisal-final-value">
+                      <span className="value-label">실제 가치:</span>
+                      <span className="value-amount">
+                        {result.actualValue[0].amount} 금화 {result.actualValue[1].amount} 은화 {result.actualValue[2].amount} 동화
+                        <span className="value-increase">
+                          (+{result.actualValue[0].amount - currentItem.baseValue[0].amount})
+                        </span>
+                      </span>
+                    </div>
                   </div>
                 )}
                 
@@ -268,33 +271,23 @@ const AppraisalTest: React.FC = () => {
                 </div>
                 
                 {/* 아이템의 알려진 태그들 표시 */}
-                <div className="known-tags">
-                  <h4>확인된 특성</h4>
+                <div className="item-tags-section">
+                  <h4 className="item-tags-title">확인된 특성</h4>
                   {currentItem.tags.length > 0 ? (
-                    <div className="tags-display">
+                    <div className="tags-container">
                       {currentItem.tags.map(tag => (
                         <TagDisplay key={tag.id} tag={tag} onClick={() => handleTagSelect(tag)} />
                       ))}
                     </div>
                   ) : (
-                    <p className="empty-notice">아직 확인된 특성이 없습니다.</p>
+                    <p>아직 확인된 특성이 없습니다.</p>
                   )}
                 </div>
-                
-                {isComplete && result && result.discoveredTags.length > 0 && (
-                  <div className="discovered-tags">
-                    <h4>새로 발견된 특성</h4>
-                    <div className="tags-display">
-                      {result.discoveredTags.map(tag => (
-                        <TagDisplay key={tag.id} tag={tag} onClick={() => handleTagSelect(tag)} />
-                      ))}
-                    </div>
-                  </div>
-                )}
               </>
             ) : (
               <div className="empty-workspace">
-                <p>좌측에서 감정할 아이템을 선택하세요.</p>
+                <div className="empty-icon">🔍</div>
+                <div className="empty-message">좌측에서 감정할 아이템을 선택하세요.</div>
               </div>
             )}
           </div>

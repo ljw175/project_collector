@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/components.css';
+import '../styles/expertise-test.css';
 import { useExpertise } from '../features/expertise/hooks/useExpertise';
 import { ExpertiseLevel } from '../models/player';
 import { ExpertiseSkill } from '../features/expertise/types/expertise_types';
@@ -61,8 +62,9 @@ const ExpertiseTest: React.FC = () => {
   const renderSkillDetails = () => {
     if (!selectedSkill) {
       return (
-        <div className="skill-details-empty">
-          <p>좌측 스킬 목록에서 스킬을 선택하세요.</p>
+        <div className="empty-details">
+          <div className="empty-icon">🧠</div>
+          <p className="empty-message">좌측 스킬 목록에서 스킬을 선택하세요.</p>
         </div>
       );
     }
@@ -76,47 +78,68 @@ const ExpertiseTest: React.FC = () => {
     
     return (
       <div className="skill-details">
-        <h3>{selectedSkill.name}</h3>
+        <div className="skill-header">
+          <h3 className="skill-title">{selectedSkill.name}</h3>
+          <div className={`skill-level-indicator level-${String(selectedSkill.level).toLowerCase()}`}>
+            {selectedSkill.level}
+          </div>
+        </div>
+        
         <div className="skill-description">
           <p>{selectedSkill.description}</p>
         </div>
         
-        <div className="skill-level">
-          <span className="label">현재 레벨:</span>
-          <span className={`value level-${selectedSkill.level}`}>{selectedSkill.level}</span>
-        </div>
-        
-        <div className="skill-category">
-          <span className="label">카테고리:</span>
-          <span className="value">{selectedSkill.category}</span>
+        <div className="skill-info">
+          <div className="info-item">
+            <span className="info-label">카테고리:</span>
+            <span className="info-value">{selectedSkill.category}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">획득일:</span>
+            <span className="info-value">2025년 4월 15일</span>
+          </div>
         </div>
         
         <div className="skill-bonuses">
-          <h4>보너스 효과</h4>
-          <ul>
+          <h4 className="section-title">보너스 효과</h4>
+          <div className="bonuses-list">
             {selectedSkill.bonus && Object.entries(selectedSkill.bonus)
               .filter(([_, value]) => value > 0)
               .map(([key, value], index) => (
-                <li key={index}>
-                  <span className="bonus-type">{getBonusTypeLabel(key)}:</span>
-                  <span className="bonus-value">+{value}%</span>
-                </li>
+                <div key={index} className="bonus-item">
+                  <div className="bonus-type">{getBonusTypeLabel(key)}</div>
+                  <div className="bonus-value">+{value}%</div>
+                  <div className="bonus-bar">
+                    <div className="bonus-progress" style={{ width: `${Math.min(value * 2, 100)}%` }}></div>
+                  </div>
+                </div>
               ))}
-          </ul>
+            {(!selectedSkill.bonus || Object.values(selectedSkill.bonus).every(v => v <= 0)) && (
+              <p className="no-bonus">이 스킬은 현재 보너스 효과가 없습니다.</p>
+            )}
+          </div>
         </div>
         
         <div className="skill-upgrade">
-          <h4>업그레이드</h4>
-          <div className="upgrade-options">
-            {possibleUpgrades.map(upgrade => (
-              <button
-                key={upgrade.level}
-                className={`upgrade-btn ${upgrade.canUpgrade ? 'available' : ''}`}
-                onClick={() => handleUpgradeSkill(selectedSkill, upgrade.level)}
-                disabled={!upgrade.canUpgrade}
+          <h4 className="section-title">스킬 업그레이드</h4>
+          <div className="upgrade-path">
+            {possibleUpgrades.map((upgrade, index) => (
+              <div 
+                key={upgrade.level} 
+                className={`upgrade-node ${selectedSkill.level === upgrade.level ? 'current' : 
+                  upgrade.canUpgrade ? 'available' : ''}`}
               >
-                {upgrade.level} ({upgrade.requiredExp} 경험치)
-              </button>
+                <div className="node-level">{upgrade.level}</div>
+                <div className="node-cost">{upgrade.requiredExp} 경험치</div>
+                {upgrade.canUpgrade && selectedSkill.level !== upgrade.level && (
+                  <button 
+                    className="upgrade-btn"
+                    onClick={() => handleUpgradeSkill(selectedSkill, upgrade.level)}
+                  >
+                    업그레이드
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -146,20 +169,40 @@ const ExpertiseTest: React.FC = () => {
     const rareChanceBonus = calculateCategoryBonus(selectedCategory, 'rare_chance');
     
     return (
-      <div className="category-bonuses">
-        <h3>{selectedCategory} 전문성 보너스</h3>
+      <div className="category-summary">
+        <h3 className="summary-title">{selectedCategory} 전문성 요약</h3>
         <div className="bonus-list">
           <div className="bonus-item">
-            <span className="label">감정 성공률:</span>
-            <span className="value">+{appraisalBonus}%</span>
+            <div className="bonus-icon">🔍</div>
+            <div className="bonus-info">
+              <div className="bonus-name">감정 성공률</div>
+              <div className="bonus-value">+{appraisalBonus}%</div>
+            </div>
+            <div className="bonus-bar">
+              <div className="bonus-progress" style={{ width: `${Math.min(appraisalBonus * 2, 100)}%` }}></div>
+            </div>
           </div>
+          
           <div className="bonus-item">
-            <span className="label">아이템 가치:</span>
-            <span className="value">+{valueBonus}%</span>
+            <div className="bonus-icon">💰</div>
+            <div className="bonus-info">
+              <div className="bonus-name">아이템 가치</div>
+              <div className="bonus-value">+{valueBonus}%</div>
+            </div>
+            <div className="bonus-bar">
+              <div className="bonus-progress" style={{ width: `${Math.min(valueBonus * 2, 100)}%` }}></div>
+            </div>
           </div>
+          
           <div className="bonus-item">
-            <span className="label">희귀 특성 발견:</span>
-            <span className="value">+{rareChanceBonus}%</span>
+            <div className="bonus-icon">✨</div>
+            <div className="bonus-info">
+              <div className="bonus-name">희귀 특성 발견</div>
+              <div className="bonus-value">+{rareChanceBonus}%</div>
+            </div>
+            <div className="bonus-bar">
+              <div className="bonus-progress" style={{ width: `${Math.min(rareChanceBonus * 2, 100)}%` }}></div>
+            </div>
           </div>
         </div>
       </div>
@@ -172,7 +215,8 @@ const ExpertiseTest: React.FC = () => {
         <Link to="/dev" className="back-button">← 테스트 메뉴로</Link>
         <h1>전문성 시스템 테스트</h1>
         <div className="experience-display">
-          경험치: {experience}
+          <div className="exp-label">보유 경험치:</div>
+          <div className="exp-value">{experience} EXP</div>
           <div className="exp-controls">
             <input
               type="number"
@@ -181,7 +225,7 @@ const ExpertiseTest: React.FC = () => {
               onChange={e => setExpAmount(e.target.value)}
               min="1"
             />
-            <button className="btn-small" onClick={handleAddExperience}>
+            <button className="exp-add-btn" onClick={handleAddExperience}>
               추가
             </button>
           </div>
@@ -190,33 +234,40 @@ const ExpertiseTest: React.FC = () => {
       
       <main className="app-content">
         <div className="expertise-container">
-          {/* 필터링 컨트롤 */}
-          <div className="expertise-controls">
-            <div className="category-filters">
-              <button
-                className={selectedCategory === null ? 'active' : ''}
-                onClick={() => setSelectedCategory(null)}
-              >
-                모든 스킬
-              </button>
-              {Object.values(ItemCategory).map(category => (
-                <button
-                  key={category}
-                  className={selectedCategory === category ? 'active' : ''}
-                  onClick={() => setSelectedCategory(category)}
+          {/* 사이드바 - 카테고리 필터 */}
+          <div className="expertise-sidebar">
+            <div className="sidebar-section categories">
+              <h3 className="section-title">카테고리</h3>
+              <div className="category-list">
+                <div
+                  className={`category-item ${selectedCategory === null ? 'active' : ''}`}
+                  onClick={() => setSelectedCategory(null)}
                 >
-                  {category}
-                </button>
-              ))}
+                  <span className="category-name">모든 스킬</span>
+                </div>
+                {Object.values(ItemCategory).map(category => (
+                  <div
+                    key={category}
+                    className={`category-item ${selectedCategory === category ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    <span className="category-name">{category}</span>
+                  </div>
+                ))}
+              </div>
             </div>
             
             {renderCategoryBonuses()}
           </div>
           
-          <div className="expertise-content">
+          <div className="expertise-main">
             {/* 스킬 목록 */}
-            <div className="skills-list">
-              <h2>보유한 전문성 스킬</h2>
+            <div className="skills-panel">
+              <div className="panel-header">
+                <h2 className="panel-title">
+                  {selectedCategory ? `${selectedCategory} 전문성 스킬` : '모든 전문성 스킬'}
+                </h2>
+              </div>
               
               {filteredSkills.length > 0 ? (
                 <div className="skills-grid">
@@ -226,23 +277,42 @@ const ExpertiseTest: React.FC = () => {
                       className={`skill-card ${selectedSkill?.id === skill.id ? 'selected' : ''}`}
                       onClick={() => setSelectedSkill(skill)}
                     >
-                      <div className="skill-name">{skill.name}</div>
-                      <div className={`skill-level-badge level-${skill.level}`}>
+                      <div className="skill-icon">
+                        {skill.category === ItemCategory.WEAPON ? '⚔️' :
+                         skill.category === ItemCategory.JEWELRY ? '💎' :
+                         skill.category === ItemCategory.ART ? '🎨' :
+                         skill.category === ItemCategory.BOOK ? '📚' : '🧠'}
+                      </div>
+                      <div className="skill-content">
+                        <div className="skill-name">{skill.name}</div>
+                        <div className="skill-category">{skill.category}</div>
+                      </div>
+                      <div className={`skill-level level-${String(skill.level).toLowerCase()}`}>
                         {skill.level}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="no-skills-message">
-                  선택한 카테고리의 스킬이 없습니다.
+                <div className="empty-skills">
+                  <div className="empty-icon">📋</div>
+                  <p className="empty-message">
+                    {selectedCategory ? 
+                      `${selectedCategory} 카테고리에 습득한 스킬이 없습니다.` : 
+                      '습득한 스킬이 없습니다.'}
+                  </p>
                 </div>
               )}
             </div>
             
             {/* 스킬 상세 정보 */}
-            <div className="skill-details-panel">
-              {renderSkillDetails()}
+            <div className="details-panel">
+              <div className="panel-header">
+                <h2 className="panel-title">스킬 세부 정보</h2>
+              </div>
+              <div className="panel-content">
+                {renderSkillDetails()}
+              </div>
             </div>
           </div>
         </div>

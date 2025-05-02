@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/components.css';
+import '../styles/calendar-test.css';
 
 /**
  * 달력/일정 시스템 테스트 페이지

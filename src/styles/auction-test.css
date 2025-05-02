@@ -1,54 +1,55 @@
 /* 경매 테스트 페이지 스타일 */
+@import url('tokens.css');
 
 /* 메인 레이아웃 */
 .auction-container {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 20px;
-  margin-top: 20px;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
 }
 
 /* 아이템 목록 패널 */
 .auction-items-panel {
-  background-color: #f5f5f5;
-  border-radius: 5px;
-  padding: 15px;
-  border: 1px solid #ddd;
+  background-color: var(--bg-panel);
+  border-radius: var(--radius);
+  padding: var(--spacing-md);
+  border: 1px solid var(--clr-border);
 }
 
 .panel-title {
-  font-size: 18px;
-  margin-bottom: 15px;
-  color: #333;
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-md);
+  color: var(--clr-text);
   font-weight: bold;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+  border-bottom: 1px solid var(--clr-border);
+  padding-bottom: var(--spacing-sm);
 }
 
 .auctionable-items {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
-  gap: 10px;
+  gap: var(--spacing-sm);
   max-height: 500px;
   overflow-y: auto;
 }
 
 .auction-item {
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 10px;
+  background-color: var(--bg-app);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  padding: var(--spacing-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--trans);
 }
 
 .auction-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-hover);
 }
 
 .auction-item.selected {
-  border-color: #FF9800;
+  border-color: var(--rarity-legendary);
   background-color: rgba(255, 152, 0, 0.1);
 }
 
@@ -56,7 +57,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .item-name {
@@ -64,127 +65,99 @@
 }
 
 .item-value {
-  color: #4CAF50;
+  color: var(--clr-success);
   font-weight: bold;
 }
 
 .item-description {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 8px;
+  color: var(--clr-muted);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-sm);
 }
 
 .item-attributes {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 5px;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
 }
 
 .item-attribute {
-  background-color: #e0e0e0;
-  border-radius: 3px;
-  padding: 2px 5px;
-  font-size: 12px;
-  color: #333;
+  background-color: var(--bg-card);
+  border-radius: calc(var(--radius) / 2);
+  padding: 2px var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--clr-text);
 }
 
 /* 경매 워크스페이스 */
 .auction-workspace {
   display: flex;
   flex-direction: column;
-  background-color: #fff;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  padding: 20px;
+  background-color: var(--bg-panel);
+  border-radius: var(--radius);
+  border: 1px solid var(--clr-border);
+  padding: var(--spacing-lg);
 }
 
 .workspace-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .workspace-title {
-  font-size: 20px;
-  color: #333;
+  font-size: var(--font-size-lg);
+  color: var(--clr-text);
   font-weight: bold;
 }
 
 .auction-status {
-  padding: 5px 10px;
+  padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: 15px;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   font-weight: bold;
 }
 
 .status-inactive {
-  background-color: #e0e0e0;
-  color: #333;
+  background-color: var(--bg-card);
+  color: var(--clr-text);
 }
 
 .status-active {
-  background-color: #e8f5e9;
-  color: #4CAF50;
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--clr-success);
 }
 
 .status-completed {
-  background-color: #e3f2fd;
-  color: #2196F3;
+  background-color: rgba(33, 150, 243, 0.1);
+  color: var(--rarity-rare);
 }
 
-/* 경매 생성 폼 */
+/* 경매 생성 폼 - components.css의 form 스타일 활용 */
 .create-auction-form {
-  padding: 15px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  border: 1px solid #eee;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #333;
-}
-
-.form-input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.form-select {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-  background-color: white;
+  padding: var(--spacing-md);
+  background-color: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--clr-border);
+  margin-bottom: var(--spacing-lg);
 }
 
 .auction-control-buttons {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
 }
 
 .create-button {
-  padding: 10px 20px;
-  background-color: #FF9800;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--rarity-legendary);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius);
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--trans);
 }
 
 .create-button:hover {
@@ -192,37 +165,37 @@
 }
 
 .create-button:disabled {
-  background-color: #FFE0B2;
+  background-color: rgba(255, 152, 0, 0.3);
   cursor: not-allowed;
 }
 
 /* 활성 경매 디스플레이 */
 .active-auction-display {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 5px;
-  border: 1px solid #eee;
-  margin-bottom: 20px;
+  padding: var(--spacing-lg);
+  background-color: var(--bg-panel);
+  border-radius: var(--radius);
+  border: 1px solid var(--clr-border);
+  margin-bottom: var(--spacing-lg);
 }
 
 .auction-item-details {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--clr-border);
 }
 
 .auction-item-image {
   width: 120px;
   height: 120px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
+  background-color: var(--bg-card);
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
-  font-size: 12px;
+  color: var(--clr-muted);
+  font-size: var(--font-size-xs);
 }
 
 .auction-item-info {
@@ -230,20 +203,20 @@
 }
 
 .info-title {
-  font-size: 20px;
-  margin-bottom: 8px;
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-sm);
   font-weight: bold;
 }
 
 .info-description {
-  color: #666;
-  margin-bottom: 10px;
+  color: var(--clr-muted);
+  margin-bottom: var(--spacing-sm);
   line-height: 1.4;
 }
 
 .info-details {
   display: flex;
-  gap: 15px;
+  gap: var(--spacing-md);
 }
 
 .info-detail {
@@ -252,17 +225,17 @@
 }
 
 .detail-label {
-  font-size: 12px;
-  color: #666;
+  font-size: var(--font-size-xs);
+  color: var(--clr-muted);
 }
 
 .detail-value {
   font-weight: bold;
-  color: #333;
+  color: var(--clr-text);
 }
 
 .detail-value.value {
-  color: #4CAF50;
+  color: var(--clr-success);
 }
 
 /* 경매 타이머 */
@@ -270,46 +243,46 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  background-color: #fff3e0;
-  border-radius: 5px;
-  margin-bottom: 20px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: rgba(255, 152, 0, 0.1);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-lg);
 }
 
 .timer-label {
   font-weight: bold;
-  color: #333;
+  color: var(--clr-text);
 }
 
 .timer-display {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   font-weight: bold;
-  color: #FF9800;
+  color: var(--rarity-legendary);
   font-family: monospace;
 }
 
 /* 입찰 섹션 */
 .bidding-section {
-  padding: 15px;
-  background-color: #f5f5f5;
-  border-radius: 5px;
-  margin-bottom: 20px;
+  padding: var(--spacing-md);
+  background-color: var(--bg-card);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-lg);
 }
 
 .section-title {
-  font-size: 16px;
+  font-size: var(--font-size-md);
   font-weight: bold;
-  margin-bottom: 15px;
-  color: #333;
+  margin-bottom: var(--spacing-md);
+  color: var(--clr-text);
 }
 
 .current-bid {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-  background-color: white;
-  border-radius: 4px;
-  margin-bottom: 15px;
+  padding: var(--spacing-sm);
+  background-color: var(--bg-app);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-md);
 }
 
 .bid-info {
@@ -318,14 +291,14 @@
 }
 
 .bid-label {
-  font-size: 14px;
-  color: #666;
+  font-size: var(--font-size-sm);
+  color: var(--clr-muted);
 }
 
 .bid-value {
-  font-size: 20px;
+  font-size: var(--font-size-lg);
   font-weight: bold;
-  color: #FF9800;
+  color: var(--rarity-legendary);
 }
 
 .bidder-info {
@@ -335,37 +308,39 @@
 }
 
 .bidder-label {
-  font-size: 14px;
-  color: #666;
+  font-size: var(--font-size-sm);
+  color: var(--clr-muted);
 }
 
 .bidder-name {
   font-weight: bold;
-  color: #333;
+  color: var(--clr-text);
 }
 
 .bid-form {
   display: flex;
-  gap: 10px;
+  gap: var(--spacing-sm);
 }
 
 .bid-input {
   flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  font-size: var(--font-size-md);
+  background-color: var(--bg-app);
+  color: var(--clr-text);
 }
 
 .bid-button {
-  padding: 8px 16px;
-  background-color: #FF9800;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--rarity-legendary);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius);
   cursor: pointer;
   font-weight: bold;
-  transition: all 0.2s ease;
+  transition: all var(--trans);
 }
 
 .bid-button:hover {
@@ -373,35 +348,35 @@
 }
 
 .bid-button:disabled {
-  background-color: #FFE0B2;
+  background-color: rgba(255, 152, 0, 0.3);
   cursor: not-allowed;
 }
 
 /* 입찰 기록 */
 .bid-history {
-  margin-top: 20px;
+  margin-top: var(--spacing-lg);
 }
 
 .history-title {
-  font-size: 16px;
+  font-size: var(--font-size-md);
   font-weight: bold;
-  margin-bottom: 10px;
-  color: #333;
+  margin-bottom: var(--spacing-sm);
+  color: var(--clr-text);
 }
 
 .history-list {
   max-height: 200px;
   overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  background-color: var(--bg-app);
 }
 
 .bid-entry {
   display: flex;
   justify-content: space-between;
-  padding: 10px 15px;
-  border-bottom: 1px solid #eee;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--clr-border);
 }
 
 .bid-entry:last-child {
@@ -413,118 +388,124 @@
 }
 
 .entry-amount {
-  color: #FF9800;
+  color: var(--rarity-legendary);
   font-weight: bold;
 }
 
 .entry-time {
-  color: #999;
-  font-size: 12px;
+  color: var(--clr-muted);
+  font-size: var(--font-size-xs);
 }
 
 /* 경매 결과 */
 .auction-results {
-  padding: 20px;
-  background-color: #e8f5e9;
-  border-radius: 5px;
-  margin-top: 20px;
-  border: 1px solid #c8e6c9;
+  padding: var(--spacing-lg);
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: var(--radius);
+  margin-top: var(--spacing-lg);
+  border: 1px solid var(--clr-success);
 }
 
 .results-title {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   font-weight: bold;
-  margin-bottom: 15px;
-  color: #2E7D32;
+  margin-bottom: var(--spacing-md);
+  color: var(--clr-success);
 }
 
 .winner-info {
   display: flex;
   justify-content: space-between;
-  padding: 15px;
-  background-color: white;
-  border-radius: 5px;
-  margin-bottom: 15px;
+  padding: var(--spacing-md);
+  background-color: var(--bg-app);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-md);
 }
 
 .winner-label {
   font-weight: bold;
-  color: #333;
+  color: var(--clr-text);
 }
 
 .winner-name {
   font-weight: bold;
-  color: #4CAF50;
+  color: var(--clr-success);
 }
 
 .final-bid {
-  font-size: 20px;
+  font-size: var(--font-size-lg);
   font-weight: bold;
-  color: #FF9800;
+  color: var(--rarity-legendary);
 }
 
 .auction-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  padding: 10px;
-  background-color: white;
-  border-radius: 5px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: var(--bg-app);
+  border-radius: var(--radius);
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
+  padding: var(--spacing-sm);
   text-align: center;
 }
 
 .stat-label {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 5px;
+  font-size: var(--font-size-xs);
+  color: var(--clr-muted);
+  margin-bottom: var(--spacing-xs);
 }
 
 .stat-value {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   font-weight: bold;
-  color: #333;
+  color: var(--clr-text);
 }
 
-/* 빈 상태 */
+/* 빈 상태 - components.css의 empty-state 클래스 활용 */
 .empty-auction {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 50px 0;
-  color: #999;
+  padding: var(--spacing-xl) 0;
+  color: var(--clr-muted);
   text-align: center;
 }
 
-.empty-icon {
-  font-size: 48px;
-  margin-bottom: 15px;
-  color: #ddd;
-}
-
-.empty-message {
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
 .start-auction-button {
-  padding: 10px 20px;
-  background-color: #FF9800;
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--rarity-legendary);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius);
   cursor: pointer;
   font-weight: bold;
-  transition: all 0.2s ease;
+  transition: all var(--trans);
 }
 
 .start-auction-button:hover {
   background-color: #F57C00;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .auction-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-details {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .auction-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

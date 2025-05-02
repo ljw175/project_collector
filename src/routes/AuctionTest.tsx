@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/components.css';
+import '../styles/auction-test.css';
 import { useAuction } from '../features/auction/hooks/useAuction';
 import { useInventory } from '../features/inventory/hooks/useInventory';
 import { Item } from '../models/item';
@@ -200,227 +201,272 @@ const AuctionTest: React.FC = () => {
       <header className="app-header">
         <Link to="/dev" className="back-button">← 테스트 메뉴로</Link>
         <h1>경매 시스템 테스트</h1>
-        <div className="player-coins">
-          <span>보유 자금: {player.coins}</span>
+        <div className="player-stats">
+          <span>보유 자금: {player.coins} 코인</span>
         </div>
       </header>
       
-        {/* 경매 상태 표시 */}
-        <div className="auction-status">
-          {isAuctionIdle && (
-            <div className="status-message">경매 준비 중</div>
-          )}
-          {isAuctionActive && (
-            <>
-              <div className="status-message">경매 진행 중 - 라운드 {currentItemIndex + 1}/{auctionItems.length}</div>
-              <div className="timer">
-                <div className="timer-bar">
+      <main className="app-content">
+        <div className="auction-container">
+          {/* 경매 아이템 패널 */}
+          <div className="auction-items-panel">
+            <h2 className="panel-title">경매 아이템</h2>
+            
+            {isAuctionIdle && !selectedItem && (
+              <div className="auctionable-items">
+                {items.filter(item => item.isAppraised).map(item => (
                   <div 
-                    className="timer-fill" 
-                    style={{ width: `${(timeRemaining / 30) * 100}%` }}
-                  ></div>
-                </div>
-                <div className="timer-text">{timeRemaining}초</div>
-              </div>
-            </>
-          )}
-          {isAuctionEnded && (
-            <div className="status-message">경매 종료</div>
-          )}
-        </div>
-        {/* 경매 상태별 화면 */}
-        {isAuctionIdle && 
-          <div className="auction-preview">
-            {selectedItem ? (
-              <>
-                <h2>경매 아이템</h2>
-                <p><strong>{selectedItem.name}</strong></p>
-                <p>{selectedItem.description}</p>
-                <p>최소 입찰가: {parseInt(manualBidAmount) || 0} 코인</p>
+                    key={item.id} 
+                    className={`auction-item ${selectedItem === item ? 'selected' : ''}`} 
+                    onClick={() => setSelectedItem(item)}
+                  >
+                    <div className="item-header">
+                      <div className="item-name">{item.name}</div>
+                      <div className="item-value">
+                        {item.actualValue[0].amount || item.baseValue[0].amount} 금화
+                      </div>
+                    </div>
+                    <div className="item-description">{item.description.substring(0, 50)}...</div>
+                    <div className="item-attributes">
+                      <span className="item-attribute">{item.category}</span>
+                      {item.tags && item.tags.length > 0 && 
+                        item.tags.slice(0, 2).map(tag => (
+                          <span key={tag.id} className="item-attribute">{tag.name}</span>
+                        ))
+                      }
+                    </div>
+                  </div>
+                ))}
                 
-                {/* 예상 판매가 표시 */}
-                {selectedItem.isAppraised && (
-                  <div className="estimate">
-                    <h3>예상 판매가</h3>
-                    {(() => {
-                      const estimate = estimateSalePrice(selectedItem);
-                      return (
-                        <p>
-                          <span className="estimate-min">{estimate.min}</span>
-                          {' ~ '}
-                          <span className="estimate-avg">{estimate.average}</span>
-                          {' ~ '}
-                          <span className="estimate-max">{estimate.max}</span>
-                          {' 코인'}
-                        </p>
-                      );
-                    })()}
+                {items.filter(item => item.isAppraised).length === 0 && (
+                  <div className="empty-auction">
+                    <div className="empty-icon">📦</div>
+                    <div className="empty-message">판매할 감정된 아이템이 없습니다. 인벤토리에서 아이템을 먼저 감정하세요.</div>
+                    <button className="start-auction-button" disabled>경매 시작</button>
                   </div>
                 )}
+              </div>
+            )}
+            
+            {isAuctionIdle && selectedItem && (
+              <div className="auction-item selected">
+                <h3 className="item-name">{selectedItem.name}</h3>
+                <p className="item-description">{selectedItem.description}</p>
                 
-                <p>경매 참여자: {participants.length}명의 참가자</p>
-                <button className="btn btn-primary" onClick={initializeAndStartAuction}>
-                  경매 시작
-                </button>
-              </>
-            ) : (
-              <>
-                <h2>판매할 아이템 선택</h2>
-                <div className="items-grid">
-                  {items.filter(item => item.isAppraised).map(item => (
-                    <div 
-                      key={item.id} 
-                      className={`item-card ${selectedItem === item.id ? 'selected' : '' }`} 
-                      onClick={() => setSelectedItem(item)}
-                    >
-                      <div className="item-name">{item.name}</div>
-                      <div className="item-value">{item.actualValue[0].amount || item.baseValue[0].amount} 금화 {item.actualValue[1].amount || item.baseValue[1].amount} 은화 {item.actualValue[2].amount || item.baseValue[2].amount} 동화 </div>
+                <div className="auction-stats">
+                  <div className="stat-item">
+                    <div className="stat-label">최소 입찰가</div>
+                    <div className="stat-value">{parseInt(manualBidAmount) || 0} 코인</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-label">예상 판매가</div>
+                    <div className="stat-value">
+                      {(() => {
+                        const estimate = estimateSalePrice(selectedItem);
+                        return `${estimate.min}~${estimate.max} 코인`;
+                      })()}
+                    </div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-label">참가자</div>
+                    <div className="stat-value">{participants.length}명</div>
+                  </div>
+                </div>
+                
+                <div className="auction-control-buttons">
+                  <button className="create-button" onClick={initializeAndStartAuction}>
+                    경매 시작
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {(isAuctionActive || isAuctionEnded) && bidHistory.length > 0 && (
+              <div>
+                <h3 className="history-title">입찰 기록</h3>
+                <div className="history-list">
+                  {bidHistory.slice().reverse().map((bid, index) => (
+                    <div key={index} className="bid-entry">
+                      <span className="entry-bidder">{getBidderName(bid.participantId)}</span>
+                      <span className="entry-amount">{bid.bidAmount} 코인</span>
+                      <span className="entry-time">{new Date(bid.timestamp).toLocaleTimeString()}</span>
                     </div>
                   ))}
                 </div>
-                
-                {items.filter(item => item.isAppraised).length === 0 && (
-                  <p className="text-muted">판매할 감정된 아이템이 없습니다. 인벤토리에서 아이템을 먼저 감정하세요.</p>
-                )}
-              </>
+              </div>
             )}
           </div>
-        }
-        {isAuctionActive && currentAuctionItem && (
-          <div className="auction-main">
-            {/* 아이템 정보 */}
-            <div className="item-details">
-              <h2>{currentAuctionItem.item.name}</h2>
-              <div className="item-info">
-                <div className="item-image-placeholder">
-                  아이템 이미지
-                </div>
-                <div className="item-data">
-                  <p>{currentAuctionItem.item.description}</p>
-                  <p><strong>카테고리:</strong> {currentAuctionItem.item.category}</p>
-                  <p><strong>태그:</strong> {Array.isArray(currentAuctionItem.item.tags) && currentAuctionItem.item.tags.length > 0 ? 
-                      currentAuctionItem.item.tags.map(tag => tag.name).join(', ') : 
-                      '없음'}</p>
-                  <p><strong>최소 입찰가:</strong> {currentAuctionItem.startingBid || '없음'} 코인</p>
-                  <p>
-                    <strong>현재 최고 입찰:</strong> {currentHighestBid || '없음'} 코인 
-                    ({getBidderName(currentHighestBidder)})
-                  </p>
-                </div>
+          
+          {/* 경매 워크스페이스 */}
+          <div className="auction-workspace">
+            <div className="workspace-header">
+              <h2 className="workspace-title">경매장</h2>
+              <div className={`auction-status ${isAuctionIdle ? 'status-inactive' : isAuctionActive ? 'status-active' : 'status-completed'}`}>
+                {isAuctionIdle ? '대기 중' : isAuctionActive ? '진행 중' : '완료'}
               </div>
             </div>
             
-            {/* 경매 컨트롤 */}
-            <div className="bidding-section">
-              {/* 입찰 기록 */}
-              <div className="bid-history">
-                <h3>입찰 기록</h3>
-                {bidHistory.length > 0 ? (
-                  bidHistory.slice().reverse().map((bid, index) => (
-                    <div key={index} className="bid-entry">
-                      <span>{getBidderName(bid.participantId)}</span>
-                      <span>{bid.bidAmount} 코인</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="no-bids">아직 입찰이 없습니다.</div>
-                )}
+            {isAuctionIdle && !selectedItem && (
+              <div className="empty-auction">
+                <div className="empty-icon">🏛️</div>
+                <div className="empty-message">좌측에서 경매에 올릴 아이템을 선택하세요.</div>
               </div>
-              
-              {/* 입찰 컨트롤 */}
-              <div className="bid-controls">
-                <div className="player-info">
-                  현재 보유: {player.coins} 코인 
+            )}
+            
+            {isAuctionActive && currentAuctionItem && (
+              <div className="active-auction-display">
+                <div className="auction-item-details">
+                  <div className="auction-item-image">
+                    아이템 이미지
+                  </div>
+                  <div className="auction-item-info">
+                    <div className="info-title">{currentAuctionItem.item.name}</div>
+                    <div className="info-description">{currentAuctionItem.item.description}</div>
+                    <div className="info-details">
+                      <div className="info-detail">
+                        <span className="detail-label">카테고리</span>
+                        <span className="detail-value">{currentAuctionItem.item.category}</span>
+                      </div>
+                      <div className="info-detail">
+                        <span className="detail-label">시작가</span>
+                        <span className="detail-value">{currentAuctionItem.startingBid} 코인</span>
+                      </div>
+                      <div className="info-detail">
+                        <span className="detail-label">현재 최고가</span>
+                        <span className="detail-value value">{currentHighestBid || '없음'} 코인</span>
+                      </div>
+                      <div className="info-detail">
+                        <span className="detail-label">최고 입찰자</span>
+                        <span className="detail-value">{getBidderName(currentHighestBidder)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="auction-timer">
+                  <div className="timer-label">남은 시간</div>
+                  <div className="timer-display">{timeRemaining}초</div>
+                </div>
+                
+                <div className="bidding-section">
+                  <h3 className="section-title">입찰</h3>
+                  
+                  <div className="current-bid">
+                    <div className="bid-info">
+                      <span className="bid-label">현재 최고 입찰가</span>
+                      <span className="bid-value">{currentHighestBid || currentAuctionItem.startingBid} 코인</span>
+                    </div>
+                    <div className="bidder-info">
+                      <span className="bidder-label">최고 입찰자</span>
+                      <span className="bidder-name">{getBidderName(currentHighestBidder) || '없음'}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="player-info">
+                    현재 보유: {player.coins} 코인 
+                    {player.maxAutoBid > 0 && (
+                      <span> (자동 입찰: {player.maxAutoBid} 코인까지)</span>
+                    )}
+                  </div>
+                  
+                  <div className="bid-form">
+                    <input 
+                      type="number" 
+                      className="bid-input"
+                      value={manualBidAmount}
+                      onChange={(e) => setManualBidAmount(e.target.value)}
+                      min={currentHighestBid ? currentHighestBid + 10 : currentAuctionItem.startingBid}
+                      placeholder="입찰 금액"
+                    />
+                    <button 
+                      className="bid-button"
+                      onClick={handlePlaceBid}
+                      disabled={
+                        parseInt(manualBidAmount) <= currentHighestBid ||
+                        parseInt(manualBidAmount) > player.coins
+                      }
+                    >
+                      입찰하기
+                    </button>
+                  </div>
+                  
+                  <div className="bid-form">
+                    <input 
+                      type="number" 
+                      className="bid-input"
+                      value={autoBidAmount}
+                      onChange={(e) => setAutoBidAmount(e.target.value)}
+                      placeholder="최대 자동 입찰 금액"
+                    />
+                    <button 
+                      className="bid-button"
+                      onClick={setAutoBid}
+                      disabled={
+                        player.maxAutoBid > 0 ||
+                        parseInt(autoBidAmount) <= currentHighestBid ||
+                        parseInt(autoBidAmount) > player.coins
+                      }
+                    >
+                      자동 입찰 설정
+                    </button>
+                  </div>
+                  
                   {player.maxAutoBid > 0 && (
-                    <span> (자동 입찰: {player.maxAutoBid} 코인까지)</span>
+                    <button 
+                      className="bid-button"
+                      onClick={cancelBid}
+                    >
+                      자동 입찰 취소
+                    </button>
                   )}
                 </div>
-                
-                <div className="manual-bid">
-                  <input 
-                    type="number" 
-                    value={manualBidAmount}
-                    onChange={(e) => setManualBidAmount(e.target.value)}
-                    min={currentHighestBid ? currentHighestBid + 10 : 10}
-                    placeholder="입찰 금액"
-                  />
-                  <button 
-                    className="btn btn-primary"
-                    onClick={handlePlaceBid}
-                  >
-                    입찰
-                  </button>
-                </div>
-                
-                <div className="auto-bid">
-                  <input 
-                    type="number" 
-                    value={autoBidAmount}
-                    onChange={(e) => setAutoBidAmount(e.target.value)}
-                    placeholder="최대 자동 입찰 금액"
-                  />
-                  <button 
-                    className="btn"
-                    onClick={setAutoBid}
-                    disabled={player.maxAutoBid > 0}
-                  >
-                    자동 입찰 설정
-                  </button>
-                </div>
-                
-                {player.maxAutoBid > 0 && (
-                  <button 
-                    className="btn"
-                    onClick={cancelBid}
-                  >
-                    자동 입찰 취소
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {isAuctionEnded && (
-          <div className="result-section">
-            <h3>경매 결과</h3>
-            
-            {currentHighestBidder ? (
-              <div className="auction-result">
-                <div className="winner">
-                  낙찰자: {getBidderName(currentHighestBidder)}
-                </div>
-                <div className="final-price">낙찰가: {currentHighestBid} 코인</div>
-                
-                {currentHighestBidder === player.id ? (
-                  <p>축하합니다! 당신이 이 아이템을 획득했습니다.</p>
-                ) : (
-                  <>
-                    <p>{getBidderName(currentHighestBidder)}가 이 아이템을 획득했습니다.</p>
-                    <button 
-                      className="btn btn-primary"
-                      onClick={handleSellItem}
-                    >
-                      판매 완료 ({currentHighestBid} 코인 획득)
-                    </button>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="no-bidders">
-                입찰자가 없어 경매가 유찰되었습니다.
               </div>
             )}
             
-            <button 
-              className="btn"
-              onClick={resetTestAuction}
-            >
-              다음 경매
-            </button>
+            {isAuctionEnded && (
+              <div className="auction-results">
+                <h3 className="results-title">경매 결과</h3>
+                
+                {currentHighestBidder ? (
+                  <>
+                    <div className="winner-info">
+                      <div className="winner-label">낙찰자:</div>
+                      <div className="winner-name">{getBidderName(currentHighestBidder)}</div>
+                      <div className="final-bid">{currentHighestBid} 코인</div>
+                    </div>
+                    
+                    {currentHighestBidder === player.id ? (
+                      <p>축하합니다! 당신이 이 아이템을 획득했습니다.</p>
+                    ) : (
+                      <>
+                        <p>{getBidderName(currentHighestBidder)}가 이 아이템을 획득했습니다.</p>
+                        <button 
+                          className="create-button"
+                          onClick={handleSellItem}
+                        >
+                          판매 완료 ({currentHighestBid} 코인 획득)
+                        </button>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <div className="no-bidders">
+                    입찰자가 없어 경매가 유찰되었습니다.
+                  </div>
+                )}
+                
+                <button 
+                  className="create-button"
+                  onClick={resetTestAuction}
+                >
+                  다음 경매
+                </button>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      </main>
+    </div>
   );
 };
 

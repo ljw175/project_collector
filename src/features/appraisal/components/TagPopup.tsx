@@ -26,9 +26,8 @@ const TagPopup: React.FC<TagPopupProps> = ({
   const appraised = isAppraised(item);
   
   // 아이템이 감정되었으면 태그 표시, 아니면 히든 태그 표시
-  const tags = appraised 
-    ? item.tags 
-    : (isAppraised(item) ? [] : item.hiddenTags);
+  // Provide a default empty array if tags/hiddenTags are undefined
+  const tags = (appraised ? item.tags : item.hiddenTags) ?? [];
   
   return (
     <div className="tag-popup-overlay" onClick={onClose}>

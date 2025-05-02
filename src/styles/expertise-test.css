@@ -1,0 +1,500 @@
+/* 전문성 테스트 페이지 스타일 */
+@import url('tokens.css');
+
+/* 메인 레이아웃 */
+.expertise-container {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+}
+
+/* 사이드바 */
+.expertise-sidebar {
+  background-color: var(--bg-panel);
+  border-radius: var(--radius);
+  padding: var(--spacing-md);
+  border: 1px solid var(--clr-border);
+  position: sticky;
+  top: var(--spacing-lg);
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-title {
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  margin-bottom: var(--spacing-md);
+  color: var(--clr-text);
+}
+
+/* 카테고리 목록 */
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.category-item {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--trans);
+  background-color: var(--bg-card);
+}
+
+.category-item:hover {
+  background-color: var(--clr-border);
+}
+
+.category-item.active {
+  background-color: var(--clr-accent);
+  color: black;
+  font-weight: bold;
+}
+
+.category-name {
+  display: block;
+}
+
+/* 카테고리 요약 */
+.category-summary {
+  border-top: 1px solid var(--clr-border);
+  padding-top: var(--spacing-md);
+}
+
+.summary-title {
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  margin-bottom: var(--spacing-md);
+  color: var(--clr-text);
+}
+
+.bonus-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.bonus-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.bonus-icon {
+  font-size: 1.5rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bonus-info {
+  flex: 1;
+}
+
+.bonus-name {
+  font-size: var(--font-size-sm);
+  margin-bottom: 2px;
+}
+
+.bonus-value {
+  font-weight: bold;
+  color: var(--clr-accent);
+}
+
+.bonus-bar {
+  height: 6px;
+  background-color: var(--bg-app);
+  border-radius: var(--radius);
+  overflow: hidden;
+  flex: 1;
+}
+
+.bonus-progress {
+  height: 100%;
+  background-color: var(--clr-accent);
+}
+
+/* 메인 영역 */
+.expertise-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* 패널 공통 스타일 */
+.skills-panel, .details-panel {
+  background-color: var(--bg-panel);
+  border-radius: var(--radius);
+  border: 1px solid var(--clr-border);
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.panel-title {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--clr-text);
+  margin: 0;
+}
+
+.panel-content {
+  padding: var(--spacing-md);
+}
+
+/* 스킬 목록 */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.skill-card {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-card);
+  border-radius: var(--radius);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all var(--trans);
+  border: 2px solid transparent;
+}
+
+.skill-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.skill-card.selected {
+  border-color: var(--clr-accent);
+}
+
+.skill-icon {
+  font-size: 1.5rem;
+  margin-right: var(--spacing-sm);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-app);
+  border-radius: 50%;
+}
+
+.skill-content {
+  flex: 1;
+}
+
+.skill-name {
+  font-weight: bold;
+  margin-bottom: var(--spacing-xs);
+}
+
+.skill-category {
+  font-size: var(--font-size-xs);
+  color: var(--clr-muted);
+}
+
+/* 스킬 레벨 */
+.skill-level {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  padding: 4px var(--spacing-sm);
+  border-radius: var(--radius);
+  text-transform: capitalize;
+}
+
+.level-beginner {
+  background-color: var(--rarity-common);
+  color: white;
+}
+
+.level-amateur {
+  background-color: var(--rarity-uncommon);
+  color: white;
+}
+
+.level-intermediate {
+  background-color: var(--rarity-rare);
+  color: white;
+}
+
+.level-expert {
+  background-color: var(--rarity-epic);
+  color: white;
+}
+
+.level-master {
+  background-color: var(--rarity-legendary);
+  color: white;
+}
+
+/* 빈 상태 표시 */
+.empty-skills, .empty-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  color: var(--clr-muted);
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+}
+
+.empty-message {
+  font-size: var(--font-size-md);
+  text-align: center;
+}
+
+/* 스킬 세부 정보 */
+.skill-details {
+  padding: var(--spacing-md);
+}
+
+.skill-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.skill-title {
+  font-size: var(--font-size-xl);
+  font-weight: bold;
+  margin: 0;
+}
+
+.skill-level-indicator {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius);
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.skill-description {
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--bg-card);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--clr-accent);
+}
+
+.skill-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.info-label {
+  font-weight: bold;
+  color: var(--clr-muted);
+}
+
+.info-value {
+  color: var(--clr-text);
+}
+
+/* 스킬 보너스 */
+.skill-bonuses {
+  margin-bottom: var(--spacing-lg);
+}
+
+.bonuses-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.bonus-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background-color: var(--bg-card);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius);
+}
+
+.bonus-type {
+  flex: 1;
+}
+
+.bonus-value {
+  font-weight: bold;
+  color: var(--clr-accent);
+}
+
+.no-bonus {
+  color: var(--clr-muted);
+  font-style: italic;
+  text-align: center;
+  padding: var(--spacing-md) 0;
+}
+
+/* 스킬 업그레이드 */
+.skill-upgrade {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--clr-border);
+}
+
+.upgrade-path {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  padding: var(--spacing-lg) 0;
+}
+
+.upgrade-path::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: var(--clr-border);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.upgrade-node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  width: 80px;
+}
+
+.node-level {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  border: 2px solid var(--clr-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: var(--spacing-xs);
+  text-transform: capitalize;
+}
+
+.upgrade-node.current .node-level {
+  background-color: var(--clr-accent);
+  border-color: var(--clr-accent);
+  color: black;
+}
+
+.upgrade-node.available .node-level {
+  border-color: var(--clr-accent);
+  border-style: dashed;
+}
+
+.node-cost {
+  font-size: var(--font-size-xs);
+  color: var(--clr-muted);
+  text-align: center;
+}
+
+.upgrade-btn {
+  margin-top: var(--spacing-xs);
+  background-color: var(--clr-success);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--trans);
+}
+
+.upgrade-btn:hover {
+  background-color: #388E3C;
+}
+
+/* 경험치 표시 */
+.experience-display {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.exp-label {
+  font-weight: bold;
+  color: var(--clr-text);
+}
+
+.exp-value {
+  background-color: var(--clr-accent);
+  color: black;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius);
+  font-weight: bold;
+}
+
+.exp-controls {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.exp-input {
+  width: 80px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  background-color: var(--bg-app);
+  color: var(--clr-text);
+}
+
+.exp-add-btn {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--clr-accent);
+  color: black;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color var(--trans);
+}
+
+.exp-add-btn:hover {
+  background-color: #e6b000;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .expertise-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .expertise-sidebar {
+    position: static;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+}

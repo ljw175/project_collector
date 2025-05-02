@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/components.css';
+import '../styles/map-test.css';
 import { useMap } from '../features/map/hooks/useMap';
 import { LocationType, LocationActivity, MapEvent } from '../features/map/types/map_types';
 
@@ -95,153 +96,77 @@ const MapTest: React.FC = () => {
       
       <main className="app-content">
         <div className="map-container">
-          {/* 현재 위치 정보 */}
-          <div className="current-location-panel">
-            <h2>현재 위치</h2>
+          {/* 맵 디스플레이 영역 */}
+          <div className="map-display">
+            <h2 className="map-title">수집가의 세계</h2>
+            <div className="map-area">
+              {/* 실제 맵 이미지 */}
+              <div className="map-image"></div>
+              
+              {/* 위치 마커들 */}
+              {locations.map(location => (
+                <div
+                  key={location.id}
+                  className={`location-marker ${!location.isDiscovered ? 'undiscovered' : 
+                    currentLocation?.id === location.id ? 'current' : 
+                    location.isAccessible ? '' : 'inaccessible'} 
+                    ${location.currentVisitors ? 'visited' : ''}`}
+                  style={{
+                    left: `${location.coordinates.x}%`,
+                    top: `${location.coordinates.y}%`
+                  }}
+                  onClick={() => {
+                    if (!location.isDiscovered) {
+                      handleDiscoverLocation(location.id);
+                    } else if (location.isAccessible && location.id !== currentLocation?.id) {
+                      handleTravel(location.id);
+                    }
+                  }}
+                >
+                  {location.isDiscovered ? 
+                    location.type === LocationType.SHOP ? '🏪' : 
+                    location.type === LocationType.MARKET ? '🛒' :
+                    location.type === LocationType.AUCTION_HOUSE ? '🏛️' : 
+                    location.type === LocationType.WORKSHOP ? '🔨' : 
+                    location.type === LocationType.LIBRARY ? '📚' : 
+                    location.type === LocationType.COLLECTOR ? '🧐' : 
+                    location.type === LocationType.COLLECTION_SITE ? '📦' : '✨'
+                  : '?'}
+                  
+                  <div className="location-tooltip">
+                    {location.isDiscovered ? location.name : '미발견 지역'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* 지역 정보 패널 */}
+          <div className="location-info-panel">
             {currentLocation ? (
-              <div className="location-info">
-                <div className="location-header">
-                  <h3>{currentLocation.name}</h3>
-                  <div className="location-type">{currentLocation.type}</div>
+              <>
+                <h3 className="info-header">현재 위치</h3>
+                <div className="current-location">
+                  <h4 className="location-name">{currentLocation.name}</h4>
+                  <div className={`location-type ${currentLocation.type.toLowerCase()}`}>
+                    {currentLocation.type}
+                  </div>
+                  <p className="location-description">{currentLocation.description}</p>
                 </div>
                 
-                <p className="location-description">
-                  {currentLocation.description}
-                </p>
-                
-                <div className="location-activities">
-                  <h4>가능한 활동</h4>
-                  <div className="activity-list">
-                    {currentLocation.availableActivities.map(activity => (
-                      <div key={activity} className="activity-badge">
-                        {activity}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* 현재 위치의 이벤트 */}
-                {currentLocationEvents.length > 0 && (
-                  <div className="location-events">
-                    <h4>이벤트</h4>
-                    <ul className="event-list">
-                      {currentLocationEvents.map(event => (
-                        <li key={event.id} className="event-item">
-                          <div className="event-title">{event.title}</div>
-                          <div className="event-description">{event.description}</div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="no-location">
-                <p>위치 정보를 불러올 수 없습니다.</p>
-              </div>
-            )}
-          </div>
-          
-          {/* 맵과 이동 가능 위치 */}
-          <div className="map-navigation">
-            <div className="map-filters">
-              <h3>탐색 필터</h3>
-              <div className="activity-filters">
-                <button 
-                  className={activityFilter === null ? 'active' : ''}
-                  onClick={() => handleActivityFilter(null)}
-                >
-                  모든 장소
-                </button>
-                <button 
-                  className={activityFilter === LocationActivity.BUY ? 'active' : ''}
-                  onClick={() => handleActivityFilter(LocationActivity.BUY)}
-                >
-                  상점
-                </button>
-                <button 
-                  className={activityFilter === LocationActivity.APPRAISE ? 'active' : ''}
-                  onClick={() => handleActivityFilter(LocationActivity.APPRAISE)}
-                >
-                  감정소
-                </button>
-                <button 
-                  className={activityFilter === LocationActivity.SELL ? 'active' : ''}
-                  onClick={() => handleActivityFilter(LocationActivity.SELL)}
-                >
-                  경매장
-                </button>
-                <button 
-                  className={activityFilter === LocationActivity.COLLECT ? 'active' : ''}
-                  onClick={() => handleActivityFilter(LocationActivity.COLLECT)}
-                >
-                  수집장소
-                </button>
-              </div>
-            </div>
-            
-            {/* 이동 가능 위치 목록 */}
-            <div className="locations-grid">
-              {filteredLocations.length > 0 ? (
-                filteredLocations.map(location => (
-                  <div
-                    key={location.id}
-                    className={`location-card ${currentLocation?.id === location.id ? 'current' : ''}`}
-                    onClick={() => {
-                      if (location.id !== currentLocation?.id && location.isAccessible) {
-                        handleTravel(location.id);
-                      }
-                    }}
-                  >
-                    <div className="location-name">{location.name}</div>
-                    <div className="location-type">{location.type}</div>
-                    <div className="location-status">
-                      {!location.isAccessible && <span className="locked">🔒</span>}
-                      {currentLocation?.id === location.id && <span className="current-badge">현재 위치</span>}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="no-locations">
-                  {activityFilter 
-                    ? `${activityFilter} 활동이 가능한 장소가 없습니다.` 
-                    : '발견한 장소가 없습니다.'}
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* 전체 맵 (시각적 표현) */}
-          <div className="map-visual">
-            <h3>전체 맵</h3>
-            <div className="map-visual-content">
-              {/* 실제 프로젝트에서는 canvas나 SVG 등으로 구현 */}
-              <div className="map-placeholder">
-                <div className="map-background"></div>
-                
-                {/* 위치 표시 */}
-                {locations.map(location => (
-                  <div
-                    key={location.id}
-                    className={`map-location-marker ${location.isDiscovered ? 'discovered' : 'undiscovered'} 
-                      ${currentLocation?.id === location.id ? 'current' : ''}`}
-                    style={{
-                      left: `${location.coordinates.x}%`,
-                      top: `${location.coordinates.y}%`
-                    }}
-                    title={location.isDiscovered ? location.name : '미발견 지역'}
-                    onClick={() => {
-                      if (!location.isDiscovered) {
-                        handleDiscoverLocation(location.id);
-                      } else if (location.isAccessible && location.id !== currentLocation?.id) {
-                        handleTravel(location.id);
-                      }
-                    }}
-                  >
-                    {location.isDiscovered 
-                      ? (
-                        <div className="marker-content">
-                          <div className="marker-icon">
+                {/* 방문 가능 장소 */}
+                <div className="available-locations">
+                  <h4 className="section-title">이동 가능 장소</h4>
+                  <div className="location-cards">
+                    {filteredLocations
+                      .filter(loc => loc.id !== currentLocation.id && loc.isAccessible)
+                      .map(location => (
+                        <div
+                          key={location.id}
+                          className="location-card"
+                          onClick={() => handleTravel(location.id)}
+                        >
+                          <div className="location-icon">
                             {location.type === LocationType.SHOP ? '🏪' : 
                              location.type === LocationType.MARKET ? '🛒' :
                              location.type === LocationType.AUCTION_HOUSE ? '🏛️' : 
@@ -250,25 +175,90 @@ const MapTest: React.FC = () => {
                              location.type === LocationType.COLLECTOR ? '🧐' : 
                              location.type === LocationType.COLLECTION_SITE ? '📦' : '✨'}
                           </div>
-                          <div className="marker-name">{location.name}</div>
+                          <div className="location-info">
+                            <div className="info-name">{location.name}</div>
+                            <div className="info-type">{location.type}</div>
+                            <div className="location-distance">약 1시간 거리</div>
+                          </div>
                         </div>
-                      ) 
-                      : '?'
-                    }
+                      ))}
                   </div>
-                ))}
+                </div>
+                
+                {/* 이동 버튼 영역 */}
+                <div className="location-actions">
+                  <button 
+                    className="travel-button"
+                    onClick={() => handleAdvanceDay()}
+                  >
+                    하루 휴식
+                  </button>
+                  
+                  <button 
+                    className="interact-button"
+                    onClick={() => console.log("이 장소에서 활동하기")}
+                  >
+                    활동하기
+                  </button>
+                </div>
+                
+                {/* 여행 결과 패널 */}
+                {travelResult && (
+                  <div className="travel-panel">
+                    <h4 className="travel-title">여행 결과</h4>
+                    <div className="travel-progress">
+                      <div className="progress-bar"></div>
+                    </div>
+                    <div className="travel-info">
+                      <span className="from-location">출발: {locations.find(loc => loc.id === travelResult.currentLocationId)?.name}</span>
+                      <span className="travel-time">소요 시간: {travelResult.cost.time}시간</span>
+                    </div>
+                    <p className="travel-message">{travelResult.message}</p>
+                  </div>
+                )}
+                
+                {/* 장소 내 이벤트 */}
+                {currentLocationEvents.length > 0 && (
+                  <div className="location-npcs">
+                    <h4 className="section-title">이벤트</h4>
+                    <div className="npc-list">
+                      {currentLocationEvents.map(event => (
+                        <div key={event.id} className="npc-card">
+                          <div className="npc-avatar">🧙</div>
+                          <div className="npc-info">
+                            <div className="npc-name">{event.title}</div>
+                            <div className="npc-role">{event.description}</div>
+                          </div>
+                          <div className="npc-action">대화하기</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* 이벤트 히스토리 */}
+                <div className="event-history">
+                  <h4 className="section-title">최근 활동</h4>
+                  <div className="history-list">
+                    <div className="event-entry">
+                      <span className="event-time">오늘 09:00</span>
+                      <span className="event-description">{currentLocation.name}에 도착했습니다.</span>
+                    </div>
+                    <div className="event-entry">
+                      <span className="event-time">어제 18:30</span>
+                      <span className="event-description">탐험을 마치고 쉬었습니다.</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="empty-state">
+                <div className="empty-icon">🗺️</div>
+                <p className="empty-message">위치 정보를 불러올 수 없습니다.</p>
               </div>
-            </div>
+            )}
           </div>
         </div>
-        
-        {/* 이동 결과 메시지 */}
-        {travelResult && (
-          <div className={`travel-result ${travelResult.success ? 'success' : 'error'}`}>
-            {travelResult.message}
-            {travelResult.success && ` (소요 시간: ${travelResult.cost}시간)`}
-          </div>
-        )}
       </main>
     </div>
   );

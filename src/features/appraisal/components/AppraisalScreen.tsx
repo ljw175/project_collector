@@ -358,8 +358,8 @@ const AppraisalScreen: React.FC = () => {
       {appraisalState === 'complete' && result && selectedItem && (
         <AppraisalResult 
           itemName={selectedItem.name}
-          baseValue={selectedItem.baseValue}
-          actualValue={result.actualValue}
+          baseValue={selectedItem.baseValue[0].amount || selectedItem.baseValue[1].amount || selectedItem.baseValue[2].amount}
+          actualValue={result.actualValue[0].amount || result.actualValue[1].amount || result.actualValue[2].amount}
           condition={result.condition}
           tags={result.discoveredTags}
           history={result.history}

@@ -139,67 +139,70 @@ const InventoryTest: React.FC = () => {
   const renderItemDetails = () => {
     if (!selectedItem) {
       return (
-        <div className="text-muted">
-          <p>아이템을 선택하여 세부 정보를 확인하세요.</p>
+        <div className="details-empty">
+          <div className="empty-icon">🧰</div>
+          <p className="empty-message">아이템을 선택하여 세부 정보를 확인하세요.</p>
         </div>
       );
     }
     
     return (
       <div className="item-details">
-        <h3>{selectedItem.name}</h3>
-        <p>{selectedItem.description}</p>
-        
-        <div className="detail-row">
-          <div className="label">카테고리:</div>
-          <div className="value">
-            {categoryLabels[selectedItem.category] || selectedItem.category}
-          </div>
-        </div>
-        
-        <div className="detail-row">
-          <div className="label">가치:</div>
-          <div className="value">
-            {selectedItem.isAppraised 
-              ? `${selectedItem.actualValue}G (감정 완료)`
-              : `${selectedItem.baseValue}G (추정)`
-            }
-          </div>
-        </div>
-        
-        <div className="detail-row">
-          <div className="label">수량:</div>
-          <div className="value">{selectedItem.quantity}</div>
-        </div>
+        <h3 className="item-name">{selectedItem.name}</h3>
+        <p className="item-description">{selectedItem.description}</p>
         
         <div className="detail-section">
-          <h4>태그 정보</h4>
+          <div className="detail-row">
+            <div className="detail-label">카테고리:</div>
+            <div className="detail-value">
+              {categoryLabels[selectedItem.category] || selectedItem.category}
+            </div>
+          </div>
+          
+          <div className="detail-row">
+            <div className="detail-label">가치:</div>
+            <div className="detail-value">
+              {selectedItem.isAppraised 
+                ? <span className="value-appraised">{selectedItem.actualValue[0].amount}G {selectedItem.actualValue[1].amount}S {selectedItem.actualValue[2].amount}C (감정 완료)</span>
+                : <span className="value-base">{selectedItem.baseValue[0].amount}G {selectedItem.baseValue[1].amount}S {selectedItem.baseValue[2].amount}C (추정)</span>
+              }
+            </div>
+          </div>
+          
+          <div className="detail-row">
+            <div className="detail-label">수량:</div>
+            <div className="detail-value">{selectedItem.quantity}</div>
+          </div>
+        </div>
+        
+        <div className="tags-section">
+          <h4 className="section-title">태그 정보</h4>
           {selectedItem.isAppraised ? (
             selectedItem.tags.length > 0 ? (
-              <div className="tags-grid">
+              <div className="tags-container">
                 {selectedItem.tags.map(tag => (
                   <TagDisplay key={tag.id} tag={tag} />
                 ))}
               </div>
             ) : (
-              <p className="text-muted">특별한 특성이 없습니다.</p>
+              <p className="no-tags-message">특별한 특성이 없습니다.</p>
             )
           ) : (
-            <p className="text-muted">감정이 필요합니다.</p>
+            <p className="no-appraisal-message">감정이 필요합니다.</p>
           )}
         </div>
         
-        <div className="action-buttons mt-4">
-          <button className="btn">사용</button>
+        <div className="item-actions">
+          <button className="action-btn use-btn">사용</button>
           <button 
-            className="btn"
+            className="action-btn sell-btn"
             onClick={() => removeItem(selectedItem.id)}
           >
             판매
           </button>
           {!selectedItem.isAppraised && (
             <button 
-              className="btn btn-primary"
+              className="action-btn appraise-btn"
               onClick={() => handleAppraiseItem(selectedItem.id)}
             >
               감정
@@ -213,20 +216,20 @@ const InventoryTest: React.FC = () => {
   // 인벤토리 통계 표시
   const renderInventoryStats = () => {
     return (
-      <div className="inventory-stats">
-        <div className="stat-item">
-          <div className="stat-label">총 아이템:</div>
-          <div className="stat-value">{inventoryCapacity.total}/{inventoryCapacity.limit}</div>
+      <div className="inventory-summary">
+        <div className="summary-item">
+          <div className="item-label">총 아이템:</div>
+          <div className="item-value">{inventoryCapacity.total}/{inventoryCapacity.limit}</div>
         </div>
-        <div className="stat-item">
-          <div className="stat-label">총 가치:</div>
-          <div className="stat-value">{totalValue}G</div>
+        <div className="summary-item">
+          <div className="item-label">총 가치:</div>
+          <div className="item-value">{totalValue}G</div>
         </div>
-        <div className="category-stats">
+        <div className="category-summary">
           {Object.entries(categoryStats).map(([category, count]) => (
             count > 0 && (
-              <div key={category} className="category-stat">
-                <div className="category-name">{categoryLabels[category as ItemCategory] || category}:</div>
+              <div key={category} className="category-item">
+                <div className="category-label">{categoryLabels[category as ItemCategory] || category}:</div>
                 <div className="category-count">{count}</div>
               </div>
             )
@@ -240,22 +243,23 @@ const InventoryTest: React.FC = () => {
   const renderFilters = () => {
     if (!showFilters) {
       return (
-        <div className="simple-filters">
-          <div className="search-filter">
+        <div className="filter-simple">
+          <div className="search-box">
             <input 
               type="text" 
               placeholder="아이템 검색..."
               value={filter.searchText || ''}
               onChange={handleSearchChange}
-              className="form-control"
+              className="search-input"
             />
+            <span className="search-icon">🔍</span>
           </div>
           
-          <div className="sort-filter">
+          <div className="sort-dropdown">
             <select 
               value={sortOption} 
               onChange={e => updateSortOption(e.target.value as any)}
-              className="form-control"
+              className="sort-select"
             >
               {Object.entries(sortOptions).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
@@ -264,7 +268,7 @@ const InventoryTest: React.FC = () => {
           </div>
           
           <button 
-            className="btn btn-sm" 
+            className="filter-toggle-btn" 
             onClick={() => setShowFilters(true)}
           >
             고급 필터
@@ -274,35 +278,35 @@ const InventoryTest: React.FC = () => {
     }
     
     return (
-      <div className="advanced-filters">
+      <div className="filter-advanced">
         <div className="filter-header">
-          <h3>아이템 필터</h3>
+          <h3 className="filter-title">아이템 필터</h3>
           <button 
-            className="btn btn-sm" 
+            className="filter-toggle-btn" 
             onClick={() => setShowFilters(false)}
           >
             간단히 보기
           </button>
         </div>
         
-        <div className="filter-grid">
+        <div className="filter-options">
           <div className="filter-group">
-            <label>검색어:</label>
+            <label className="filter-label">검색어:</label>
             <input 
               type="text" 
               placeholder="아이템 검색..."
               value={filter.searchText || ''}
               onChange={handleSearchChange}
-              className="form-control"
+              className="filter-input"
             />
           </div>
           
           <div className="filter-group">
-            <label>정렬:</label>
+            <label className="filter-label">정렬:</label>
             <select 
               value={sortOption} 
               onChange={e => updateSortOption(e.target.value as any)}
-              className="form-control"
+              className="filter-select"
             >
               {Object.entries(sortOptions).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
@@ -311,11 +315,11 @@ const InventoryTest: React.FC = () => {
           </div>
           
           <div className="filter-group">
-            <label>카테고리:</label>
+            <label className="filter-label">카테고리:</label>
             <select
               value={filter.categories?.length ? filter.categories[0] : ''}
               onChange={handleCategoryFilterChange}
-              className="form-control"
+              className="filter-select"
             >
               <option value="">모든 카테고리</option>
               {Object.entries(categoryLabels).map(([category, label]) => (
@@ -327,11 +331,11 @@ const InventoryTest: React.FC = () => {
           </div>
           
           <div className="filter-group">
-            <label>감정 상태:</label>
+            <label className="filter-label">감정 상태:</label>
             <select
               value={filter.isAppraised === undefined ? 'all' : filter.isAppraised.toString()}
               onChange={handleAppraisedFilterChange}
-              className="form-control"
+              className="filter-select"
             >
               <option value="all">모든 상태</option>
               <option value="true">감정 완료</option>
@@ -340,8 +344,8 @@ const InventoryTest: React.FC = () => {
           </div>
           
           <div className="filter-group">
-            <label>가치 범위:</label>
-            <div className="value-range-buttons">
+            <label className="filter-label">가치 범위:</label>
+            <div className="range-buttons">
               {valueRangeOptions.map((range, index) => (
                 <button
                   key={index}
@@ -353,15 +357,15 @@ const InventoryTest: React.FC = () => {
               ))}
             </div>
           </div>
-        </div>
-        
-        <div className="filter-actions">
-          <button 
-            className="btn"
-            onClick={handleResetFilters}
-          >
-            필터 초기화
-          </button>
+          
+          <div className="filter-actions">
+            <button 
+              className="reset-btn"
+              onClick={handleResetFilters}
+            >
+              필터 초기화
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -382,19 +386,21 @@ const InventoryTest: React.FC = () => {
         {renderFilters()}
 
         {/* 테스트용 아이템 추가 버튼 */}
-        <div className="action-buttons mb-3">
-          <button className="btn btn-primary" onClick={() => addRandomItem()}>
+        <div className="test-actions">
+          <button className="add-item-btn primary" onClick={() => addRandomItem()}>
             랜덤 아이템 추가
           </button>
-          {Object.entries(categoryLabels).map(([category, label]) => (
-            <button 
-              key={category}
-              className="btn" 
-              onClick={() => addRandomItem(category as ItemCategory)}
-            >
-              {label} 추가
-            </button>
-          ))}
+          <div className="category-buttons">
+            {Object.entries(categoryLabels).map(([category, label]) => (
+              <button 
+                key={category}
+                className="add-item-btn" 
+                onClick={() => addRandomItem(category as ItemCategory)}
+              >
+                {label} 추가
+              </button>
+            ))}
+          </div>
         </div>
         
         {/* 인벤토리 및 아이템 상세 정보 */}
@@ -404,8 +410,8 @@ const InventoryTest: React.FC = () => {
               items.map(item => (
                 <div 
                   key={item.id}
+                  className={`inventory-slot ${selectedItemIds.includes(item.id) ? 'selected' : ''}`}
                   onClick={() => toggleSelectItem(item.id)}
-                  className={selectedItemIds.includes(item.id) ? 'selected' : ''}
                 >
                   <ItemSlot 
                     item={item} 
@@ -416,19 +422,18 @@ const InventoryTest: React.FC = () => {
               ))
             ) : (
               <div className="empty-inventory">
-                <p>인벤토리가 비어있습니다. 아이템을 추가해보세요.</p>
+                <div className="empty-icon">📦</div>
+                <p className="empty-message">인벤토리가 비어있습니다. 아이템을 추가해보세요.</p>
               </div>
             )}
           </div>
           
-          <div className="inventory-details">
-            <div className="card">
-              <div className="card-header">
-                <h2>아이템 상세 정보</h2>
-              </div>
-              <div className="card-body">
-                {renderItemDetails()}
-              </div>
+          <div className="details-panel">
+            <div className="details-header">
+              <h2 className="panel-title">아이템 상세 정보</h2>
+            </div>
+            <div className="details-content">
+              {renderItemDetails()}
             </div>
           </div>
         </div>

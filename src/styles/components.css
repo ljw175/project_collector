@@ -106,7 +106,7 @@
   border-color: var(--clr-accent);
 }
 
-/* 태그 컴포넌트 */
+/* 태그 컴포넌트 - 모든 프로젝트에서 일관되게 사용 */
 .tag {
   display: inline-flex;
   align-items: center;
@@ -116,6 +116,12 @@
   background-color: var(--bg-card);
   margin-right: var(--spacing-xs);
   margin-bottom: var(--spacing-xs);
+  gap: var(--spacing-xs);
+}
+
+.tag-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .tag-common {
@@ -225,663 +231,7 @@
   }
 }
 
-.calendar-container {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-md);
-  box-shadow: var(--shadow);
-  margin-bottom: var(--spacing-md);
-}
-
-.calendar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-md);
-}
-
-.month-nav-btn {
-  background-color: var(--bg-card);
-  border: 1px solid var(--clr-border);
-  border-radius: var(--radius);
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-lg);
-  cursor: pointer;
-  transition: background-color var(--trans);
-}
-
-.month-nav-btn:hover {
-  background-color: var(--clr-accent);
-  color: #000;
-}
-
-.calendar-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-xs);
-}
-
-.weekday {
-  text-align: center;
-  font-weight: 600;
-  font-size: var(--font-size-sm);
-}
-
-.calendar-days {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: var(--spacing-xs);
-}
-
-.calendar-day {
-  aspect-ratio: 1/1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--spacing-xs);
-  border: 1px solid var(--clr-border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  position: relative;
-  transition: all var(--trans);
-}
-
-.calendar-day:hover {
-  background-color: var(--bg-card);
-  transform: translateY(-2px);
-}
-
-.calendar-day.empty {
-  background-color: transparent;
-  border-color: transparent;
-  cursor: default;
-}
-
-.calendar-day.today {
-  box-shadow: 0 0 0 2px var(--clr-accent) inset;
-}
-
-.calendar-day.selected {
-  background-color: var(--bg-card);
-  border-color: var(--clr-accent);
-}
-
-.calendar-day.has-events .day-number::after {
-  content: "";
-  display: block;
-  width: 6px;
-  height: 6px;
-  background-color: var(--clr-accent);
-  border-radius: 50%;
-  position: absolute;
-  top: 4px;
-  right: 4px;
-}
-
-.day-number {
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  position: relative;
-}
-
-.day-events {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: auto;
-  gap: 2px;
-}
-
-.event-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--clr-accent);
-}
-
-.event-dot.festival {
-  background-color: var(--rarity-rare);
-}
-
-.event-dot.auction {
-  background-color: var(--rarity-legendary);
-}
-
-.event-dot.personal {
-  background-color: var(--rarity-uncommon);
-}
-
-.event-dot.closed {
-  opacity: 0.5;
-}
-
-.events-panel {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-md);
-  box-shadow: var(--shadow);
-  margin-bottom: var(--spacing-md);
-}
-
-.date-events h3 {
-  margin-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--clr-border);
-  padding-bottom: var(--spacing-xs);
-}
-
-.events-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.event-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-sm);
-  background-color: var(--bg-card);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all var(--trans);
-}
-
-.event-item:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-}
-
-.event-item.closed {
-  opacity: 0.6;
-}
-
-.event-item.festival .event-icon::before {
-  content: "🎪";
-}
-
-.event-item.auction .event-icon::before {
-  content: "🏛️";
-}
-
-.event-item.personal .event-icon::before {
-  content: "👨‍🎨";
-}
-
-.event-title {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-}
-
-.event-importance {
-  font-size: var(--font-size-xs);
-  padding: 2px 6px;
-  background-color: var(--rarity-uncommon);
-  color: white;
-  border-radius: 10px;
-}
-
-.event-details {
-  padding: var(--spacing-md);
-  background-color: var(--bg-card);
-  border-radius: var(--radius);
-}
-
-.event-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-sm);
-}
-
-.close-btn {
-  width: 24px;
-  height: 24px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-}
-
-/* 경매 시스템 스타일 */
-.auction-screen {
-  display: flex;
-  flex-direction: column;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--spacing-md);
-}
-
-.auction-status {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.status-message {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  margin-bottom: var(--spacing-sm);
-}
-
-.timer {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: var(--spacing-sm);
-}
-
-.timer-bar {
-  width: 100%;
-  height: 8px;
-  background-color: var(--bg-card);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.timer-fill {
-  height: 100%;
-  background-color: var(--clr-accent);
-  transition: width 1s linear;
-}
-
-.timer-text {
-  margin-top: var(--spacing-xs);
-  font-weight: 600;
-}
-
-.timer-warning .timer-fill {
-  background-color: #ff9800;
-}
-
-.timer-danger .timer-fill {
-  background-color: var(--clr-error);
-}
-
-.auction-preview {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-lg);
-  text-align: center;
-}
-
-.auction-main {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
-}
-
-@media (max-width: 768px) {
-  .auction-main {
-    grid-template-columns: 1fr;
-  }
-}
-
-.item-details {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-md);
-}
-
-.item-info {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
-}
-
-.item-image-placeholder {
-  width: 120px;
-  height: 120px;
-  background-color: var(--bg-card);
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-sm);
-  color: var(--clr-muted);
-}
-
-.item-data {
-  flex: 1;
-}
-
-.bidding-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.bid-history {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-md);
-  height: 200px;
-  overflow-y: auto;
-}
-
-.bid-entry {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--spacing-sm);
-  border-bottom: 1px solid var(--clr-border);
-}
-
-.no-bids {
-  color: var(--clr-muted);
-  text-align: center;
-  padding: var(--spacing-lg);
-}
-
-.bid-controls {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.player-info {
-  margin-bottom: var(--spacing-sm);
-  font-weight: 500;
-}
-
-.manual-bid, .auto-bid {
-  display: flex;
-  gap: var(--spacing-sm);
-}
-
-.manual-bid input, .auto-bid input {
-  flex: 1;
-  padding: var(--spacing-sm);
-  border: 1px solid var(--clr-border);
-  border-radius: var(--radius);
-  background-color: var(--bg-app);
-}
-
-.result-section {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-lg);
-  text-align: center;
-}
-
-.auction-result {
-  margin: var(--spacing-md) 0;
-}
-
-.winner, .final-price {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  margin-bottom: var(--spacing-sm);
-}
-
-/* 경매 참가자 스타일 */
-.participants-list {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.participant {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--spacing-sm);
-  border-bottom: 1px solid var(--clr-border);
-}
-
-.participant.player {
-  font-weight: 600;
-}
-
-.participant.highest-bidder {
-  color: var(--clr-accent);
-}
-
-.badge {
-  background-color: var(--clr-accent);
-  color: black;
-  padding: 2px var(--spacing-xs);
-  border-radius: var(--radius);
-  font-size: var(--font-size-xs);
-}
-
-/* 경매 타이머 */
-.auction-timer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: var(--spacing-md) 0;
-}
-
-.timer-value {
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.auction-timer.warning .timer-value {
-  color: #ff9800;
-}
-
-.auction-timer.danger .timer-value {
-  color: var(--clr-error);
-}
-
-/* 버튼 스타일 */
-.btn {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius);
-  background-color: var(--bg-card);
-  transition: background-color var(--trans);
-}
-
-.btn:hover:not(:disabled) {
-  background-color: #d5d5d5;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background-color: var(--clr-accent);
-  color: #000;
-  font-weight: 500;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #e6b000;
-}
-
-/* 전문성/스킬 시스템 스타일 */
-.category-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  margin-bottom: var(--spacing-md);
-}
-
-.category-tab {
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--bg-panel);
-  border-radius: var(--radius) var(--radius) 0 0;
-  border-bottom: 3px solid transparent;
-  transition: all var(--trans);
-}
-
-.category-tab.active {
-  background-color: var(--bg-card);
-  border-bottom-color: var(--clr-accent);
-  font-weight: 600;
-}
-
-.expertise-panel {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.expertise-header {
-  margin-bottom: var(--spacing-md);
-}
-
-.exp-bar {
-  position: relative;
-  height: 12px;
-  background-color: var(--bg-card);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-top: var(--spacing-sm);
-}
-
-.exp-fill {
-  height: 100%;
-  background-color: var(--clr-accent);
-  transition: width 0.5s ease-out;
-}
-
-.exp-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: #000;
-}
-
-.expertise-bonuses {
-  margin-bottom: var(--spacing-md);
-}
-
-.bonus-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-sm);
-}
-
-.bonus-item {
-  background-color: var(--bg-card);
-  border-radius: var(--radius);
-  padding: var(--spacing-sm);
-}
-
-.bonus-name {
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.bonus-value {
-  color: var(--clr-accent);
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.exp-test-buttons {
-  margin-top: var(--spacing-md);
-}
-
-.button-row {
-  display: flex;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-sm);
-}
-
-.skills-panel {
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  padding: var(--spacing-md);
-}
-
-.skills-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
-}
-
-.skill-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--spacing-md);
-}
-
-.skill-item {
-  display: flex;
-  background-color: var(--bg-card);
-  border-radius: var(--radius);
-  padding: var(--spacing-md);
-  gap: var(--spacing-md);
-  transition: transform var(--trans);
-}
-
-.skill-item:hover {
-  transform: translateY(-2px);
-}
-
-.skill-item.active {
-  border-left: 4px solid var(--clr-accent);
-}
-
-.skill-info {
-  flex: 1;
-}
-
-.skill-name {
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.skill-description {
-  color: var(--clr-text);
-  margin-bottom: 4px;
-}
-
-.skill-effect {
-  color: var(--clr-accent);
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-
-.skill-requirement {
-  font-size: var(--font-size-sm);
-  color: var(--clr-muted);
-}
-
-.skill-controls {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.btn-active {
-  background-color: var(--clr-accent);
-  color: #000;
-}
-
-.btn-inactive {
-  background-color: var(--bg-card);
-}
-
-.no-skills {
-  padding: var(--spacing-lg);
-  text-align: center;
-  color: var(--clr-muted);
-}
-
+/* 앱 기본 레이아웃 */
 .app-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -898,319 +248,76 @@
 .back-button {
   color: var(--clr-accent);
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .player-coins, .player-level {
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .app-content {
   background-color: var(--bg-app);
 }
 
-/* 맵 시스템 스타일 */
-.map-container {
-  margin-bottom: var(--spacing-md);
+/* 뱃지 컴포넌트 */
+.badge {
+  background-color: var(--clr-accent);
+  color: black;
+  padding: 2px var(--spacing-xs);
   border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: var(--shadow);
+  font-size: var(--font-size-xs);
 }
 
-.city-map {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1/1;
-  background: url('../assets/images/maps/Aviarium.png') center/cover no-repeat;
-  border-radius: var(--radius);
+/* 메시지 컴포넌트 */
+.message {
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  border-left: 4px solid;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
-.connections-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+.message-success {
+  border-color: var(--clr-success);
+  background-color: rgba(76, 175, 80, 0.1);
 }
 
-.connection-line {
-  stroke: rgba(200, 200, 200, 0.5);
-  stroke-width: 2;
-  stroke-dasharray: 5, 5;
+.message-info {
+  border-color: var(--rarity-rare);
+  background-color: rgba(33, 150, 243, 0.1);
 }
 
-.connection-line.active {
-  stroke: var(--clr-accent);
-  stroke-width: 3;
-  stroke-dasharray: none;
+.message-warning {
+  border-color: var(--rarity-legendary);
+  background-color: rgba(255, 152, 0, 0.1);
 }
 
-.location-marker {
-  position: absolute;
-  width: 44px;
-  height: 44px;
-  transform: translate(-50%, -50%);
+.message-error {
+  border-color: var(--clr-error);
+  background-color: rgba(255, 74, 74, 0.1);
+}
+
+/* 빈 상태 컴포넌트 */
+.empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: all var(--trans);
-}
-
-.location-marker:hover {
-  transform: translate(-50%, -50%) scale(1.1);
-}
-
-.location-icon-container {
-  display: flex;
-  align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  overflow: hidden;
-  width: 36px;
-  height: 36px;
-  background-color: var(--bg-card);
-  box-shadow: var(--shadow);
-}
-
-.location-icon-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.marker-icon {
-  background-color: var(--bg-panel);
-  border: 2px solid var(--clr-border);
-  border-radius: 30%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  font-size: 40px;
-  box-shadow: var(--shadow);
-  overflow: visible;
-}
-
-.marker-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.marker-name {
-  margin-top: 4px;
-  background-color: var(--bg-panel);
-  padding: 2px 6px;
-  border-radius: var(--radius);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  white-space: nowrap;
-  box-shadow: var(--shadow);
-}
-
-.location-marker.current .marker-icon {
-  background-color: var(--clr-accent);
-  border-color: var(--clr-accent);
-  color: #000;
-  transform: scale(1.2);
-}
-
-.location-marker.inaccessible {
-  opacity: 0.6;
-  filter: grayscale(0.8);
-  cursor: not-allowed;
-}
-
-.location-marker.has-event .event-indicator {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 18px;
-  height: 18px;
-  background-color: #ff5252;
-  color: white;
-  border-radius: 50%;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  border: 1px solid white;
-}
-
-.current-location-info, .location-details {
-  margin-top: var(--spacing-md);
-}
-
-.activities-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-sm);
-  margin: var(--spacing-sm) 0;
-}
-
-.event-card {
-  margin-top: var(--spacing-md);
-  padding: var(--spacing-sm);
-  background-color: rgba(255, 196, 0, 0.1);
-  border-left: 3px solid var(--clr-accent);
-  border-radius: 0 var(--radius) var(--radius) 0;
-}
-
-.event-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-xs);
-}
-
-.event-badge {
-  font-size: var(--font-size-xs);
-  background-color: var(--clr-accent);
-  color: #000;
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.travel-option {
-  margin-top: var(--spacing-md);
-  text-align: center;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-sm);
-}
-
-.locked-message {
-  margin-top: var(--spacing-md);
-  padding: var(--spacing-sm);
-  background-color: rgba(255, 82, 82, 0.1);
-  border-left: 3px solid var(--clr-error);
-  border-radius: 0 var(--radius) var(--radius) 0;
-  color: var(--clr-error);
-}
-
-.location-events {
-  margin-top: var(--spacing-md);
-}
-
-.event-summary {
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  background-color: var(--bg-card);
-  border-radius: var(--radius);
-}
-
-.event-timing {
-  margin-top: var(--spacing-xs);
-  font-size: var(--font-size-sm);
-}
-
-.active-event {
-  color: #4caf50;
-  font-weight: 600;
-}
-
-.upcoming-event {
-  color: #2196f3;
-}
-
-/* 맵 관련 추가 스타일 */
-.map-controls {
-  display: flex;
-  gap: 10px;
-  padding: 10px;
-  background-color: var(--bg-panel);
-  border-radius: var(--radius);
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.zoom-controls {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-left: auto;
-}
-
-.zoom-controls span {
-  min-width: 50px;
-  text-align: center;
-}
-
-.dev-info {
-  padding: 5px 10px;
-  background-color: var(--bg-card);
-  border-radius: var(--radius);
+  padding: var(--spacing-xl) 0;
   color: var(--clr-muted);
-  font-size: var(--font-size-sm);
+  text-align: center;
 }
 
-.city-map {
-  overflow: hidden;
-  will-change: transform;
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+  color: var(--clr-border);
 }
 
-.location-marker.dev-mode {
-  box-shadow: 0 0 0 2px #ff5252;
-}
-
-.location-marker.editing {
-  box-shadow: 0 0 0 3px #4caf50;
-  z-index: 100;
-}
-
-.edit-coordinates {
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 10px;
-  white-space: nowrap;
-}
-
-/* 맵 컨테이너에 컨트롤 힌트 추가 */
-.map-container::after {
-  content: "우클릭+드래그: 이동 / 마우스 휠: 확대/축소";
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 5px 10px;
-  border-radius: var(--radius);
-  font-size: var(--font-size-xs);
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-/* 개발자 모드 전용 스타일 */
-.map-container.dev-mode {
-  background-color: rgba(255, 82, 82, 0.05);
-}
-
-.map-container.dev-mode::before {
-  content: "개발자 모드";
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #ff5252;
-  color: white;
-  padding: 3px 8px;
-  border-radius: var(--radius);
-  font-size: var(--font-size-xs);
-  z-index: 100;
+.empty-message {
+  font-size: var(--font-size-md);
 }
