@@ -10,11 +10,13 @@ import { AppraisalAction } from '@features/appraisal/types/appraisal_actions';
 import { MapAction } from '@features/map/types/map_actions';
 import { PlayerAction } from '@features/player/types/player_actions';
 import { CalendarAction } from '@features/calendar/types/calendar_actions';
+import { Value } from '@/models';
 
 // 기본 게임 액션
 export type CoreGameAction =
   | { type: 'SET_PLAYER_NAME'; payload: string }
-  | { type: 'UPDATE_MONEY'; payload: number }
+  | { type: 'UPDATE_MONEY'; payload: Value[] }
+  | { type: 'UPDATE_CONVERTED_MONEY'; payload: number }
   | { type: 'CHANGE_LOCATION'; payload: string }
   | { type: 'ADVANCE_DAY'; payload?: number }
   | { type: 'START_AUCTION'; payload: string }

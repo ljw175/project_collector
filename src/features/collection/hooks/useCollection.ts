@@ -57,7 +57,7 @@ export function useCollection() {
     // 참여 가능 여부 확인 (중앙화된 서비스 사용)
     if (!collectionService.canParticipateEvent(
         selectedEvent, 
-        state.player.money, 
+        state.player.convertedMoney, 
         state.player.reputation
     )) {
       return false;
@@ -65,7 +65,7 @@ export function useCollection() {
     
     // 진입 비용 지불
     if (selectedEvent.costToEnter) {
-      dispatch({ type: 'UPDATE_MONEY', payload: -selectedEvent.costToEnter });
+      dispatch({ type: 'UPDATE_CONVERTED_MONEY', payload: -selectedEvent.costToEnter });
     }
     
     setIsCollecting(true);
@@ -131,7 +131,7 @@ export function useCollection() {
     // 서비스 레이어를 통한 참여 가능 여부 확인
     return collectionService.canParticipateEvent(
       selectedEvent,
-      state.player.money,
+      state.player.convertedMoney,
       state.player.reputation
     );
   }, [selectedEvent, isCollecting, state.player]);

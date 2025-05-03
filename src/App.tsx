@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { GameProvider } from './store/gameContext';
+import { GameProvider, useGameState } from './store/gameContext';
+import { Item } from './models/item'; // Item 타입 임포트 추가
+import { testItems } from './data/items/common-items'; // 테스트 아이템 데이터 가져오기
+import CurrencyDisplay from './components/ui/CurrencyDisplay';
 import './styles/global.css';
 import './App.css';
 
-// 테스트용 임시 데이터
-import { Item, ItemCategory } from './models/item';
+// 컴포넌트 임포트
 import StoryPanel from './components/ui/StoryPanel';
 import TagPopup from './features/appraisal/components/TagPopup';
 import ItemSlot from './components/ui/ItemSlot';
@@ -21,139 +23,6 @@ import AuctionTest from './routes/AuctionTest';
 import ExpertiseTest from './routes/ExpertiseTest';
 
 function App() {
-  const [showTagPopup, setShowTagPopup] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-  
-  // 테스트용 아이템 생성
-  const testItem: Item = {
-    id: 'test-item-1',
-    name: '오래된 은단검',
-    description: '고대 장인이 만든 것으로 보이는 섬세한 무늬가 새겨진 은단검입니다.',
-    baseValue: 150,
-    isAppraised: false,
-    category: ItemCategory.WEAPON,
-    quantity: 1,
-    tags: [],
-    hiddenTags: [
-      {
-        id: 'tag-1',
-        name: '고대의',
-        icon: '/assets/tags/ancient.png',
-        color: '#FFD700',
-        description: '고대 시대에 만들어진 물건입니다.',
-        rarity: 'rare',
-        valueMultiplier: 2.5,
-        isHidden: true
-      },
-      {
-        id: 'tag-2',
-        name: '장인의',
-        icon: '/assets/tags/craftsman.png',
-        color: '#C0C0C0',
-        description: '뛰어난 장인이 만든 물건입니다.',
-        rarity: 'uncommon',
-        valueMultiplier: 1.8,
-        isHidden: true
-      }
-    ]
-  };
-  
-  // 테스트용 스토리 메시지
-  const testMessages: Array<{
-    id: string;
-    text: string;
-    type: 'normal' | 'success' | 'warning' | 'error';
-    timestamp: number;
-  }> = [
-    {
-      id: '1',
-      text: '당신은 마을의 골동품 가게에 들어섰습니다.',
-      type: 'normal',
-      timestamp: Date.now() - 3000
-    },
-    {
-      id: '2',
-      text: '점주가 환영하며 이야기합니다. "어서오세요, 오늘은 어떤 물건을 찾고 계신가요?"',
-      type: 'normal',
-      timestamp: Date.now() - 2000
-    },
-    {
-      id: '3',
-      text: '선반 위에 [오래된 은단검]이 눈에 띕니다. 잘 관리된 상태로 보입니다.',
-      type: 'normal',
-      timestamp: Date.now() - 1000
-    },
-    {
-      id: '4',
-      text: '점주가 말합니다. "그 단검은 고풍스러운 물건입니다. 관심 있으신가요?"',
-      type: 'normal',
-      timestamp: Date.now()
-    }
-  ];
-  
-  const handleItemClick = (itemId: string, itemName: string) => {
-    console.log(`아이템 클릭: ${itemName} (${itemId})`);
-    setSelectedItem(testItem);
-    setShowTagPopup(true);
-  };
-  
-  const handleClosePopup = () => {
-    setShowTagPopup(false);
-    setSelectedItem(null);
-  };
-  
-  const handleAppraise = () => {
-    console.log('아이템 감정 시작...');
-    // 감정 로직 구현 필요
-    setShowTagPopup(false);
-  };
-
-  // 메인 게임 화면 컴포넌트
-  const MainGameScreen = () => (
-    <div className="app-container">
-      <header className="app-header">
-        <h1>Collector</h1>
-        <div className="player-stats">
-          <div className="stat">💰 500G</div>
-          <div className="stat">👑 명성 0</div>
-          <div className="stat">❤️ 100/100</div>
-        </div>
-      </header>
-      
-      <main className="app-content">
-        <StoryPanel 
-          messages={testMessages} 
-          onItemClick={handleItemClick} 
-        />
-        
-        <div className="action-panel">
-          <div className="action-buttons">
-            <button className="btn">살펴보기</button>
-            <button className="btn">대화하기</button>
-            <button className="btn btn-primary">물건 구매</button>
-            <button className="btn">떠나기</button>
-          </div>
-        </div>
-        
-        <div className="inventory-preview">
-          <h3>인벤토리</h3>
-          <div className="inventory-grid">
-            <ItemSlot item={testItem} count={1} />
-            {/* 추가 아이템 슬롯 */}
-          </div>
-        </div>
-      </main>
-      
-      {showTagPopup && selectedItem && (
-        <TagPopup 
-          item={selectedItem} 
-          onClose={handleClosePopup}
-          onAppraise={handleAppraise}
-        />
-      )}
-    </div>
-  );
-
   return (
     <GameProvider>
       <Router>
@@ -172,5 +41,138 @@ function App() {
     </GameProvider>
   );
 }
+
+// StoryPanel의 메시지 타입과 일치하는 메시지 타입 정의
+type MessageType = 'normal' | 'success' | 'warning' | 'error';
+
+// 메인 게임 화면 컴포넌트
+const MainGameScreen = () => {
+  const { state } = useGameState();
+  const [showTagPopup, setShowTagPopup] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  
+  // 진열된 테스트 아이템들 (common-items.ts에서 가져옴)
+  const displayedItems = testItems.slice(0, 3); // 처음 3개 아이템만 사용
+  
+  // 아이템 링크를 포함한 메시지 생성
+  const itemLinkText = displayedItems.map(item => `[${item.name}]`).join(' ');
+  
+  // 게임 진행 메시지용 상태 (type을 제한된 타입으로 명시)
+  const [gameMessages] = useState([
+    {
+      id: '1',
+      text: '당신은 마을의 골동품 가게에 들어섰습니다.',
+      type: 'normal' as MessageType,
+      timestamp: Date.now() - 3000
+    },
+    {
+      id: '2',
+      text: '점주가 환영하며 이야기합니다. "어서오세요, 오늘은 어떤 물건을 찾고 계신가요?"',
+      type: 'normal' as MessageType,
+      timestamp: Date.now() - 2000
+    },
+    {
+      id: '3',
+      text: `현재 진열대에 몇 가지 물건이 보입니다: ${itemLinkText}`,
+      type: 'normal' as MessageType,
+      timestamp: Date.now() - 1000
+    }
+  ]);
+  
+  // 인벤토리에서 아이템 클릭 시 처리
+  const handleItemClick = (itemId: string, itemName: string) => {
+    console.log(`아이템 클릭: ${itemName} (${itemId})`);
+    
+    // 진열된 아이템 중에서 클릭한 아이템 찾기
+    const clickedDisplayItem = displayedItems.find(item => 
+      item.name === itemName || item.id === itemId
+    );
+    
+    // 인벤토리 아이템 중에서 찾기
+    const clickedInventoryItem = state.inventory.find(item => 
+      item.id === itemId
+    );
+    
+    // 찾은 아이템을 selectedItem으로 설정
+    if (clickedDisplayItem) {
+      setSelectedItem(clickedDisplayItem);
+      setShowTagPopup(true);
+    } else if (clickedInventoryItem) {
+      setSelectedItem(clickedInventoryItem);
+      setShowTagPopup(true);
+    }
+  };
+  
+  const handleClosePopup = () => {
+    setShowTagPopup(false);
+    setSelectedItem(null);
+  };
+  
+  const handleAppraise = () => {
+    console.log('아이템 감정 시작...');
+    // 감정 로직 구현 필요
+    setShowTagPopup(false);
+  };
+
+  // 플레이어 상태 표시용 포맷팅 함수
+  const formatHealth = (health: number, maxHealth: number) => {
+    return `${health}/${maxHealth}`;
+  };
+
+  return (
+    <div className="app-container">
+      <header className="app-header">
+        <h1>Collector</h1>
+        <div className="player-stats">
+          <div className="stat" style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ marginRight: '4px' }}>💰</span>
+            <CurrencyDisplay values={state.player.money} size="large" />
+          </div>
+          <div className="stat">👑 명성 {state.player.reputation}</div>
+          <div className="stat">❤️ {formatHealth(state.player.status.health, state.player.status.maxHealth)}</div>
+        </div>
+      </header>
+      
+      <main className="app-content">
+        <StoryPanel 
+          messages={gameMessages} 
+          onItemClick={handleItemClick} 
+        />
+        
+        <div className="action-panel">
+          <div className="action-buttons">
+            <button className="btn">살펴보기</button>
+            <button className="btn">대화하기</button>
+            <button className="btn btn-primary">물건 구매</button>
+            <button className="btn">떠나기</button>
+          </div>
+        </div>
+        
+        <div className="inventory-preview">
+          <h3>인벤토리 ({state.inventory.length})</h3>
+          <div className="inventory-grid">
+            {state.inventory.slice(0, 4).map(item => (
+              <ItemSlot 
+                key={item.id} 
+                item={item} 
+                count={item.quantity} 
+                isSelected={selectedItem?.id === item.id}
+                onClick={() => handleItemClick(item.id, item.name)}
+              />
+            ))}
+          </div>
+        </div>
+      </main>
+      
+      {showTagPopup && selectedItem && (
+        <TagPopup 
+          item={selectedItem} 
+          onClose={handleClosePopup}
+          onAppraise={handleAppraise}
+        />
+      )}
+    </div>
+  );
+};
 
 export default App;

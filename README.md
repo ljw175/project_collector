@@ -1,60 +1,66 @@
-## 프로젝트 파일 구조 분석 (project_collector)
+## project_collector 종합 프로젝트 파일 구조 분석
 
-제공된 파일 구조와 코드 스니펫을 바탕으로 `project_collector` 폴더의 구조를 분석한 결과는 다음과 같습니다.
+`project_collector` 프로젝트는 수집, 감정, 경매, 인벤토리 관리, 전문성 및 네트워크, 지도 및 시간 관리 기능을 갖춘 텍스트 기반의 전당포 경영/경매 게임으로 기획되었습니다. React, TypeScript, Vite, Electron을 기반으로 개발되고 있으며, 기능별 모듈화가 명확하게 적용된 아키텍처를 따르고 있습니다.
 
-**개요:**
+### 프로젝트 개요
 
-*   **기술 스택:** React, TypeScript, Vite, Electron 기반의 데스크톱 애플리케이션. (`package.json`, `vite.config.ts`, `tsconfig.*.json`, `electron-main.ts` 존재)
-*   **아키텍처:** 기능별 모듈화(Feature-Sliced Design과 유사) 구조. 핵심 기능들이 `src/features` 아래 각자의 폴더로 분리되어 있다.
-*   **상태 관리:** React Context API (`src/store/gameContext.tsx`)를 사용하는 것으로 추정됩니다.
-*   **스타일링:** CSS 파일을 직접 사용하며, 전역 스타일, 컴포넌트별 스타일, 테스트 페이지별 스타일 등으로 분리되어 있습니다 (`src/styles`).
+* **기술 스택:** React, TypeScript, Vite, Electron
+* **아키텍처:** 기능별 모듈화 (Feature-Sliced Design과 유사)
+* **상태 관리:** React Context API를 활용한 전역 상태 관리
+* **스타일링:** CSS 모듈 및 전역 스타일, 디자인 토큰 활용
 
-**주요 폴더 및 역할:**
+### 주요 폴더 및 파일 분석
 
-1.  **루트 (`project_collector/`)**:
-    *   `package.json`: 프로젝트 의존성 및 스크립트 정의.
-    *   `vite.config.ts`: Vite 빌드 설정.
-    *   `tsconfig.*.json`: TypeScript 컴파일러 설정 (앱, Electron, 노드 환경별 분리).
-    *   `electron-main.ts`: Electron 메인 프로세스 진입점.
-    *   `index.html`: 웹 앱의 HTML 진입점.
-    *   `README.md`: 프로젝트 설명 및 기획 문서.
-    *   `eslint.config.js`: ESLint 설정.
+프로젝트의 핵심 구조는 `src` 폴더를 중심으로 구성되어 있으며, 각 최상위 폴더는 명확한 역할을 가집니다.
 
-2.  **`public/`**:
-    *   Vite에서 정적으로 제공될 파일들 (예: `vite.svg`). 빌드 시 루트 경로에 복사됩니다.
+* **`/` (루트 디렉토리):**
+    * `package.json`: 프로젝트의 의존성 목록, 스크립트, 메타 정보가 정의되어 있습니다.
+    * `vite.config.ts`: Vite 빌드 도구의 설정 파일입니다. 개발 서버, 빌드 최적화 등 Vite 관련 설정을 포함합니다.
+    * `tsconfig.*.json`: TypeScript 컴파일러 설정 파일들입니다. 애플리케이션(`.app.json`), Electron 메인 프로세스(`.electron.json`), 노드 환경(`.node.json`) 등 환경별 설정을 분리하여 관리합니다.
+    * `electron-main.ts`: Electron 애플리케이션의 메인 프로세스 진입점입니다. 브라우저 창 생성 등 데스크톱 애플리케이션 구동 로직을 담당합니다.
+    * `index.html`: 웹 기반 애플리케이션의 진입 HTML 파일입니다.
+    * `README.md`: 프로젝트에 대한 설명, 설정 방법, 기획 문서 등을 포함하는 파일입니다.
+    * `eslint.config.js`: ESLint 코드 품질 및 스타일 검사 도구의 설정 파일입니다.
 
-3.  **`src/`**: 애플리케이션의 주요 소스 코드.
-    *   **루트 파일**:
-        *   `main.tsx`: React 애플리케이션의 주 진입점 (ReactDOM 렌더링).
-        *   `App.tsx`: 최상위 React 컴포넌트 (라우팅 설정 등 포함 가능).
-        *   `index.css`, `App.css`: 전역 또는 최상위 레벨 스타일.
-        *   `vite-env.d.ts`: Vite 환경 변수 타입 정의.
-    *   **`assets/`**: 애플리케이션 내부에서 사용되는 정적 자원 (폰트, 아이콘, 이미지 등).
-    *   **`components/`**: 재사용 가능한 UI 컴포넌트.
-        *   `layout/`: 페이지 레이아웃 관련 컴포넌트.
-        *   `ui/`: 버튼, 슬롯, 패널 등 범용 UI 요소 (`ItemSlot.tsx`, `StoryPanel.tsx`, `TagDisplay.tsx`).
-    *   **`data/`**: 게임 내 정적 데이터, 상수 값, 초기 설정 등. 도메인별(감정, 경매, 게임, 인벤토리, 맵 등)로 구조화되어 있습니다.
-    *   **`features/`**: 애플리케이션의 핵심 기능 모듈. 각 기능 폴더는 유사한 내부 구조를 가집니다.
-        *   `appraisal/`, `auction/`, `calendar/`, `collection/`, `expertise/`, `inventory/`, `map/`: 각 기능 도메인.
-        *   `*_index.ts`: 해당 기능 모듈의 공개 API를 정의하는 barrel 파일.
-        *   `components/`: 해당 기능에 특화된 React 컴포넌트.
-        *   `hooks/`: 해당 기능의 상태 로직을 담은 커스텀 React Hooks (`useMap`, `useInventory` 등).
-        *   `services/`: 해당 기능의 비즈니스 로직, 데이터 처리, 외부 연동 등 (존재한다면).
-        *   `types/`: 해당 기능에서 사용되는 TypeScript 타입 정의 (`map_types.ts`, `inventory_types.ts` 등).
-        *   `utils/`: 해당 기능에 특화된 유틸리티 함수 (존재한다면).
-    *   **`hooks/`**: 여러 기능에서 공유되거나 전역적으로 사용될 수 있는 커스텀 React Hooks.
-    *   **`models/`**: 애플리케이션 전반에서 사용되는 핵심 데이터 모델(타입/인터페이스) 정의 (`game.ts`, `item.ts`, `player.ts`).
-    *   **`routes/`**: 페이지 레벨의 컴포넌트. React Router 등 라우팅 라이브러리와 함께 사용될 가능성이 높습니다. `*Test.tsx` 형태의 파일들은 각 기능별 테스트/데모 페이지로 보입니다 (`MapTest.tsx`, `InventoryTest.tsx` 등). `MainNav.tsx`는 주 내비게이션 컴포넌트일 수 있습니다.
-    *   **`services/`**: 여러 기능에서 공유되거나 전역적인 비즈니스 로직, API 연동 등을 담당하는 모듈. `gameLogic`, `storage` 등이 포함될 수 있습니다.
-    *   **`store/`**: 전역 상태 관리 관련 코드.
-        *   `gameContext.tsx`: 게임의 전역 상태를 제공하는 React Context.
-        *   `actionTypes.ts`: 상태 변경 액션 타입 정의 (Reducer 패턴 사용 가능성).
-    *   **`styles/`**: CSS 스타일 시트. 전역(`global.css`), 컴포넌트 공통(`components.css`), 디자인 토큰(`tokens.css`), 각 테스트 페이지별 스타일(`*-test.css`) 등으로 구성됩니다.
-    *   **`utils/`**: 여러 곳에서 사용될 수 있는 범용 유틸리티 함수.
+* **`public/`:**
+    * Vite에 의해 정적으로 제공되는 파일들 (예: `vite.svg`, 파비콘 등)이 위치합니다. 빌드 시 결과물의 루트 경로로 복사됩니다.
 
-**요약:**
+* **`src/`:** 애플리케이션의 소스 코드 본체가 위치하는 디렉토리입니다.
+    * **`assets/`:** 이미지, 아이콘, 폰트 등 애플리케이션 내에서 사용되는 정적 자원들을 담고 있습니다.
+    * **`components/`:** 여러 기능에서 재사용될 수 있는 범용 React 컴포넌트들을 모아 놓은 곳입니다.
+        * `ui/`: 기본적인 UI 요소 (버튼, 입력 필드 등) 또는 특정 용도의 UI 컴포넌트 (예: `ItemSlot.css`, `StoryPanel.css`, `TagDisplay.css`와 같은 스타일 파일들이 존재).
+    * **`data/`:** 게임의 콘텐츠 데이터 및 상수 값들을 정의합니다.
+        * `constants/`: 게임 규칙, 설정, 기본값 등 변하지 않는 상수들이 기능별로 분리되어 있습니다 (`appraisal-constants.ts`, `auction-constants.ts`, `game-constants.ts`, `inventory-constants.ts`, `map-constants.ts`).
+        * `events/`: 게임 내에서 발생하는 다양한 이벤트 데이터가 정의됩니다 (`collection-events.ts`).
+        * `expertise/`: 전문성 및 연락처 시스템 관련 데이터 (예: `contacts.ts`, `events.ts`, `skills.ts`).
+        * `items/`: 아이템 관련 데이터 (예: `common-items.ts`, `item-tags.ts`).
+        * `locations/`: 지도상의 위치 관련 데이터 (예: `map-locations.ts`).
+    * **`features/`:** 애플리케이션의 핵심 기능 단위로 분리된 모듈들이 위치합니다. 각 기능 폴더 (`appraisal`, `auction`, `calendar`, `collection`, `expertise`, `inventory`, `map`, `player`)는 유사한 내부 구조를 가집니다.
+        * `*/`: 각 기능별 디렉토리.
+            * `*_index.ts`: 해당 기능 모듈의 외부 공개 API (컴포넌트, 훅, 타입 등)를 내보내는 파일입니다 (예: `appraisal_index.ts`, `auction_index.ts`, `calendar_index.ts`, `collection_index.ts`, `expertise_index.ts`, `inventory_index.ts`, `map_index.ts`).
+            * `components/`: 해당 기능에 특화된 React 컴포넌트들이 위치합니다.
+            * `hooks/`: 해당 기능의 상태 관리 및 비즈니스 로직을 캡슐화한 커스텀 React Hooks가 정의됩니다 (예: `useAppraisal.ts`, `useAuction.ts`, `useCalendar.ts`, `useCollection.ts`, `useExpertise.ts`, `useInventory.ts`, `useMap.ts`).
+            * `types/`: 해당 기능에서 사용되는 TypeScript 타입 및 인터페이스 정의 파일입니다 (예: `appraisal_types.ts`, `auction_types.ts`, `calendar_types.ts`, `collection_types.ts`, `expertise_types.ts`, `inventory_types.ts`, `map_types.ts`). 또한, Reducer 패턴을 위한 액션 타입 정의 파일도 포함됩니다 (예: `appraisal_actions.ts`, `calendar_actions.ts`, `expertise_actions.ts`, `inventory_actions.ts`, `map_actions.ts`, `player_actions.ts`).
+            * `utils/`: 해당 기능에만 사용되는 유틸리티 함수들이 정의될 수 있습니다.
+    * **`models/`:** 애플리케이션 전반에서 사용되는 핵심 데이터 모델들의 TypeScript 타입 및 인터페이스 정의가 포함됩니다 (예: `game.ts`, `item.ts`, `player.ts`). `index.ts`에서 이 모델들을 통합하여 내보냅니다.
+    * **`services/`:** 게임의 핵심 비즈니스 로직 및 데이터 처리를 담당하는 서비스 계층입니다. 각 기능별 서비스는 해당 기능 폴더와 유사하게 분리되어 있습니다.
+        * `*/`: 각 서비스별 디렉토리.
+            * `*.service.ts`: 실제 비즈니스 로직 구현 파일 (예: `appraisal.service.ts`, `auction.service.ts`, `collection.service.ts`, `expertise.service.ts`, `inventory.service.ts`, `map.service.ts`).
+            * `*_service_index.ts`: 해당 서비스 모듈의 공개 API를 내보내는 파일입니다 (예: `appraisal_service_index.ts`, `auction_service_index.ts`, `collection_service_index.ts`, `expertise_service_index.ts`, `inventory_service_index.ts`, `map_service_index.ts`).
+    * **`store/`:** 애플리케이션의 전역 상태 관리와 관련된 코드입니다.
+        * `actionTypes.ts`: 게임의 모든 상태 변경 액션 타입을 통합하여 정의합니다. (Reducer 패턴 사용 가능성).
+        * `gameContext.tsx`: 게임의 전역 상태를 제공하는 React Context 및 상태 관리를 위한 Provider가 정의될 것으로 예상됩니다 (파일 내용은 제공되지 않음).
+    * **`styles/`:** 애플리케이션의 모든 CSS 스타일 시트가 포함됩니다.
+        * `tokens.css`: 디자인 시스템의 기본 변수 (색상, 간격, 폰트 등)를 정의하는 파일입니다.
+        * `components.css`: 재사용 가능한 UI 컴포넌트들에 대한 공통 스타일을 정의합니다.
+        * `global.css`: HTML 요소의 기본 스타일 재정의, 레이아웃 유틸리티 등 전역 스타일을 포함합니다.
+        * `*-test.css`: 각 기능별 테스트 또는 데모 페이지에 특화된 스타일입니다 (예: `appraisal-test.css`, `auction-test.css`, `calendar-test.css`, `collection-test.css`, `expertise-test.css`, `inventory-test.css`, `map-test.css`).
 
-이 프로젝트는 React와 TypeScript를 사용하여 구조화된 방식으로 개발되고 있으며, 특히 `src/features` 폴더를 중심으로 각 기능의 관심사를 명확히 분리하려는 노력이 엿보입니다. 커스텀 훅을 통해 상태 로직을 분리하고, Context API로 전역 상태를 관리하며, 타입스크립트를 적극적으로 활용하여 코드의 안정성을 높이고 있습니다. 테스트 페이지가 다수 존재하는 것으로 보아 기능별 개발 및 테스트를 중요하게 여기는 것으로 판단됩니다.
+### 결론
+
+`project_collector` 프로젝트는 TypeScript 기반의 React 애플리케이션으로, Electron을 통해 데스크톱 환경을 지원합니다. Feature-Sliced Design과 유사한 기능별 모듈화 아키텍처를 채택하여 코드의 응집도를 높이고 관심사를 분리했습니다. 데이터, 비즈니스 로직 (Service), 상태 관리 (Store), UI (Components, Features) 레이어가 명확하게 구분되어 있으며, 재사용 가능한 컴포넌트와 디자인 토큰을 활용하여 일관성 있는 UI/UX를 제공하려는 구조로 파악됩니다. 테스트 페이지와 관련된 스타일 파일들이 다수 존재하는 것으로 보아 기능별 개발 및 테스트가 활발히 이루어지고 있음을 알 수 있습니다.
+
+이 분석이 프로젝트 구조를 이해하시고 README.md를 업데이트하는 데 도움이 되기를 바랍니다.
 
 ### 텍스트 기반 익스트랙션 + 전당포 경영/경매 게임 ― 핵심 기획 정리
 
@@ -226,134 +232,3 @@ button{background:none;border:none;color:inherit;font:inherit;cursor:pointer;}
 .price{display:flex;align-items:center;gap:4px;}
 .price i{font-size:14px;}
 ```
-
-### **아이템 태그 팝업** (`아이템 선택 시 태그 공개.png`)
-
-```css
-.tag-popup{
-  position:absolute;bottom:90px;left:50%;transform:translateX(-50%);
-  background:var(--bg-card);padding:8px 10px;border-radius:var(--radius);
-  display:flex;gap:6px;box-shadow:var(--shadow);
-  animation:fadeIn .2s;
-}
-.tag-popup i{
-  width:28px;height:28px;border:1px solid var(--clr-border);
-  border-radius:4px;background:#333 center/70% no-repeat;
-}
-.tag-popup small{position:absolute;top:100%;left:0;margin-top:4px;
-  font-size:12px;color:var(--clr-muted);}
-@keyframes fadeIn{from{opacity:0;transform:translate(-50%,6px);}to{opacity:1;}}
-```
-
----
-
-## 2. **달력 화면** (`게임 내 기능 (달력).png`)
-
-```css
-.calendar{
-  background:var(--bg-panel);padding:12px;border-radius:var(--radius);
-  display:grid;grid-template-columns:repeat(7,1fr);gap:2px;font-size:13px;
-}
-.calendar div{
-  aspect-ratio:1/1;display:flex;justify-content:center;align-items:center;
-  border:1px solid var(--clr-border);border-radius:4px;position:relative;
-}
-.calendar .closed{background:#ffdada url(close.svg) center/70% no-repeat;}
-.calendar .auction{
-  border:2px solid var(--clr-accent);font-weight:600;
-  background:url(auction.svg) center/72% no-repeat;
-}
-.calendar .today{box-shadow:0 0 0 1.5px var(--clr-text) inset;}
-```
-
----
-
-## 3. **맵 이동 화면** (`게임 내 기능 (맵 이동).png`)
-
-```css
-.map-wrapper{
-  background:var(--bg-panel);padding:8px;border-radius:var(--radius);
-}
-.city-map{
-  width:100%;aspect-ratio:1/1;position:relative;
-  background:url(city_map_placeholder.jpg) center/cover no-repeat;
-  border:1px solid var(--clr-border);border-radius:var(--radius);
-}
-
-/* POI 아이콘 */
-.poi{
-  position:absolute;width:36px;height:36px;border-radius:50%;
-  background:#000 center/70% no-repeat;cursor:pointer;
-}
-.poi[data-type="market"]{background-image:url(market.svg);}
-.poi .badge{
-  position:absolute;top:-4px;right:-4px;
-  width:18px;height:18px;border-radius:50%;background:var(--clr-accent);
-  color:#000;font-size:11px;display:flex;justify-content:center;align-items:center;
-}
-```
-
----
-
-## 4. **인벤토리 화면** (`게임 내 기능 (인벤토리).png`)
-
-```css
-.inventory{
-  background:url(suitcase.svg) center/contain no-repeat;
-  padding:76px 24px 24px;   /* 상단 뚜껑 여백 고려 */
-  height:calc(100vh - 56px);overflow-y:auto;
-}
-.item-grid{
-  display:grid;grid-template-columns:repeat(6,1fr);
-  gap:6px;min-height:240px;
-}
-
-/* 아이템 칸 */
-.slot{
-  width:100%;aspect-ratio:1/1;border:1px solid var(--clr-border);
-  border-radius:4px;position:relative;background:#fff;
-}
-.slot[data-state="stack"]::after{
-  content:attr(data-count);position:absolute;bottom:4px;right:4px;
-  font-size:11px;background:rgba(0,0,0,.6);color:#fff;padding:0 3px;border-radius:2px;
-}
-.slot[data-state="appraised"]{
-  outline:2px solid var(--clr-accent);
-}
-.slot .tag-chip{
-  position:absolute;top:4px;left:4px;
-  width:10px;height:10px;border-radius:2px;background:purple;
-}
-```
-
----
-
-## 5. **경매 라운드 모달** *(사양)*
-
-```css
-.auction-modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.4);
-  display:flex;justify-content:center;align-items:center;
-}
-.auction-card{
-  width:320px;background:#fff;padding:16px;border-radius:var(--radius);
-  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;
-}
-.auction-header{display:flex;justify-content:space-between;align-items:center;}
-.timer-bar{
-  height:6px;border-radius:3px;background:var(--bg-card);overflow:hidden;
-}
-.timer-bar span{display:block;height:100%;background:var(--clr-accent);
-  width:100%;animation:countdown var(--dur) linear forwards;}
-@keyframes countdown{to{width:0;}}
-.bid-log{flex:1;overflow-y:auto;background:var(--bg-panel);padding:8px;font-size:13px;}
-.bid-actions{display:flex;gap:8px;}
-.bid-actions button{
-  flex:1;padding:10px;border-radius:var(--radius);border:1px solid var(--clr-border);
-  transition:background var(--trans);
-}
-.bid-actions button.primary{background:var(--clr-accent);color:#000;font-weight:600;}
-.bid-actions button:hover{background:var(--bg-card);}
-```
-
-`--dur` 커스텀 프로퍼티 값(예: `15s`, `25s`)을 JS에서 플레이어 맞춤형으로 주입하면 **적응형 타이머**를 쉽게 만들 수 있습니다.

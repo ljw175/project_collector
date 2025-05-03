@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ItemCategory } from '../models/item';
+import { useGameState } from '@/store/gameContext';
+import CurrencyDisplay from '../components/ui/CurrencyDisplay';
 import ItemSlot from '../components/ui/ItemSlot';
 import TagDisplay from '../components/ui/TagDisplay';
 import '../styles/components.css';
@@ -13,6 +15,10 @@ import { getTestItemById } from '../data/items/common-items';
  * 인벤토리 시스템 테스트 페이지
  */
 const InventoryTest: React.FC = () => {
+
+  // 게임 상태 훅 사용
+  const { state } = useGameState();
+
   // 중앙화된 인벤토리 훅 사용
   const { 
     items,
@@ -92,7 +98,7 @@ const InventoryTest: React.FC = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateFilter({ searchText: e.target.value });
   };
-  
+
   // 카테고리 필터 변경 핸들러
   const handleCategoryFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -163,8 +169,14 @@ const InventoryTest: React.FC = () => {
             <div className="detail-label">가치:</div>
             <div className="detail-value">
               {selectedItem.isAppraised 
-                ? <span className="value-appraised">{selectedItem.actualValue[0].amount}G {selectedItem.actualValue[1].amount}S {selectedItem.actualValue[2].amount}C (감정 완료)</span>
-                : <span className="value-base">{selectedItem.baseValue[0].amount}G {selectedItem.baseValue[1].amount}S {selectedItem.baseValue[2].amount}C (추정)</span>
+                ? <span className="value-appraised">
+                  <CurrencyDisplay values={selectedItem.actualValue} size="medium" />
+                  (감정 완료)
+                  </span>
+                : <span className="value-base">
+                  <CurrencyDisplay values={selectedItem.baseValue} size="medium" />
+                  (추정)
+                  </span>
               }
             </div>
           </div>

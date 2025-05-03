@@ -14,24 +14,23 @@ export const ValueCurrencies: ValueCurrency[] = [
     name: '금화',
     symbol: 'G',
     exchangeRate: 10000,
-    icon: '/assets/icons/currencies/gold.png'
+    icon: '/src/assets/icons/item/currencies/gold.png'
   },
   {
     id: 'silver',
     name: '은화',
     symbol: 'S',
     exchangeRate: 100,
-    icon: '/assets/icons/currencies/silver.png'
+    icon: '/src/assets/icons/item/currencies/silver.png'
   },
   {
     id: 'copper',
     name: '동화',
     symbol: 'C',
     exchangeRate: 1,
-    icon: '/assets/icons/currencies/copper.png'
+    icon: '/src/assets/icons/item/currencies/copper.png'
   }
 ];
-
 
 
 /**

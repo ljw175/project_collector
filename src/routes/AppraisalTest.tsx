@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useGameState } from '../store/gameContext';
 import '../styles/components.css';
 import '../styles/appraisal-test.css';
 import ItemSlot from '../components/ui/ItemSlot';
@@ -9,6 +10,7 @@ import { useAppraisal } from '../features/appraisal/hooks/useAppraisal';
 import { Item, ItemTag } from '../models/item';
 import { AppraisalOptions } from '../features/appraisal/types/appraisal_types';
 import TagPopup from '../features/appraisal/components/TagPopup';
+import CurrencyDisplay from '@/components/ui/CurrencyDisplay';
 
 /**
  * 아이템 감정 시스템 테스트 페이지
@@ -17,6 +19,7 @@ const AppraisalTest: React.FC = () => {
   const [showTagPopup, setShowTagPopup] = useState(false);
   const [selectedTag, setSelectedTag] = useState<ItemTag | null>(null);
   
+  const { state } = useGameState();
   // 플레이어 정보
   const [player, setPlayer] = useState({
     coins: 1000,
@@ -142,7 +145,7 @@ const AppraisalTest: React.FC = () => {
         <Link to="/dev" className="back-button">← 테스트 메뉴로</Link>
         <h1>감정 시스템 테스트</h1>
         <div className="player-stats">
-          <span className="player-coins">소지금: {player.coins}코인</span>
+          <span className="stats">소지금: <CurrencyDisplay values={state.player.money} size="medium" /></span>
           <span>감정 포인트: {player.appraisalPoints}/3</span>
           <button className="btn btn-sm" onClick={resetPoints}>포인트 충전</button>
         </div>

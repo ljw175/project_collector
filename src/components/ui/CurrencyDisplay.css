@@ -1,0 +1,48 @@
+/* 화폐 표시 컴포넌트 스타일 */
+.currency-display {
+  display: inline-flex;
+  align-items: center;
+}
+
+.currency-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.currency-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.currency-amount {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.currency-symbol {
+  margin-left: 1px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+/* 크기 변형 */
+.currency-display.small {
+  font-size: 0.8em;
+}
+
+.currency-display.medium {
+  font-size: 1em;
+}
+
+.currency-display.large {
+  font-size: 1.2em;
+}
+
+/* 테마 변형 */
+.currency-display.light {
+  color: var(--clr-text);
+}
+
+.currency-display.dark {
+  color: var(--clr-dark-text, #f0f0f0);
+}

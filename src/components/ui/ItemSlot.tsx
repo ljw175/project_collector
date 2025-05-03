@@ -60,13 +60,13 @@ const ItemSlot: React.FC<ItemSlotProps> = ({
       
       {appraised && (
         <div className="item-value">
-          {item.actualValue}G
+          감정완료
         </div>
       )}
       
       {!appraised && (
         <div className="item-value">
-          ?G
+          미감정
         </div>
       )}
     </div>

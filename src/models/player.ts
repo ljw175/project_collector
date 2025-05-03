@@ -1,7 +1,7 @@
 /**
  * 플레이어 관련 타입 정의
  */
-import { ItemCategory } from './item';
+import { ItemCategory, Value } from './item';
 
 // 전문성 레벨 (각 카테고리별 플레이어 전문 지식)
 export enum ExpertiseLevel {
@@ -57,7 +57,8 @@ export interface Player {
   name: string;
   level: number;
   experience: number;
-  money: number;
+  money: Value[];
+  convertedMoney: number; // 환산 가치 (통화의 총합)
   reputation: number;
   expertise: CategoryExpertise;
   contacts: Reputation[];

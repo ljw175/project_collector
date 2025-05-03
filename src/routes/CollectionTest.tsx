@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useGameState } from '../store/gameContext';
 import { useCollection } from '../features/collection/hooks/useCollection';
 import { ItemCategory } from '../models/item';
+import CurrencyDisplay from '../components/ui/CurrencyDisplay';
 import '../styles/collection-test.css';
 import '../styles/components.css';
 
@@ -9,6 +11,8 @@ import '../styles/components.css';
  * 수집 시스템 테스트 페이지
  */
 const CollectionTest: React.FC = () => {
+  
+  const { state } = useGameState();
   // 수집 훅 사용
   const {
     activeEvents,
@@ -306,7 +310,7 @@ const CollectionTest: React.FC = () => {
                 <div className="item-category">{result.item.category}</div>
                 <div className="item-stats">
                   <div className="item-value">
-                    {result.item.baseValue[0].amount} 금화
+                    <CurrencyDisplay values={result.item.baseValue} size="small" />
                   </div>
                   <div className="item-date">
                     방금 발견

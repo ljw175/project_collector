@@ -4,6 +4,7 @@
 import { createContext, useContext, useMemo, useReducer } from 'react';
 import { GameState, GameSettings } from '@models/game';
 import { GameAction } from './actionTypes';
+import { ValueCurrencies } from '@/data/items/common-items';
 
 // 초기 게임 설정
 const initialGameSettings: GameSettings = {
@@ -23,7 +24,11 @@ const initialGameState: GameState = {
     name: '',
     level: 1,
     experience: 0,
-    money: 500,
+    money: ValueCurrencies.map(currency => ({
+      currency: currency,
+      amount: 0
+    })),
+    convertedMoney: 0, // 환산 가치
     reputation: 0,
     expertise: {} as any, // 초기화 시 설정
     contacts: [],
@@ -86,7 +91,9 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         player: {
           ...state.player,
-          money: state.player.money + action.payload
+          money: state.player.money.map((m, index) => 
+            index === action.payload[index].amount ? { ...m, amount: m.amount + action.payload[index].amount } : m
+          )
         }
       };
     

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Item, isAppraised, ItemTag } from '@models/item';
 import TagDisplay from '@components/ui/TagDisplay';
+import CurrencyDisplay from '@components/ui/CurrencyDisplay';
 import './TagPopup.css';
 
 interface TagPopupProps {
@@ -28,7 +29,7 @@ const TagPopup: React.FC<TagPopupProps> = ({
   // 아이템이 감정되었으면 태그 표시, 아니면 히든 태그 표시
   // Provide a default empty array if tags/hiddenTags are undefined
   const tags = (appraised ? item.tags : item.hiddenTags) ?? [];
-  
+
   return (
     <div className="tag-popup-overlay" onClick={onClose}>
       <div className="tag-popup" onClick={(e) => e.stopPropagation()}>
@@ -42,8 +43,12 @@ const TagPopup: React.FC<TagPopupProps> = ({
             <div className="tag-category">{item.category}</div>
             <div className="tag-value">
               {appraised 
-                ? `${item.actualValue}G` 
-                : `${item.baseValue}G (미감정)`}
+                ? <CurrencyDisplay values={item.actualValue} size="medium" /> 
+                : <>
+                    <CurrencyDisplay values={item.baseValue} size="medium" />
+                    <span className="not-appraised"> (미감정)</span>
+                  </>
+              }
             </div>
           </div>
           

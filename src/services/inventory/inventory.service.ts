@@ -10,6 +10,7 @@ import {
   valueRangeOptions,
   inventoryCapacityLimits
 } from '@/data/constants/inventory-constants';
+import { ValueCurrencies } from '@/data/items/common-items';
 
 /**
  * 인벤토리 서비스 클래스
