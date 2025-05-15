@@ -41,34 +41,63 @@ export interface Reputation {
   nextLevelThreshold: number;
 }
 
-// 플레이어 상태
-export interface PlayerStatus {
-  health: number;          // 체력
-  mental: number;          // 정신력
-  fatigue: number;         // 피로도
-  maxHealth: number;
-  maxMental: number;
-  maxFatigue: number;
+// 캐릭터 상태
+export interface CharacterStatus {
+  hp: number;          // 체력
+  maxHp: number;
+  mp: number;          // 정신력
+  maxMp: number;
+  fp: number;         // 피로도
+  maxFp: number;
+  sanity: number;     // 이성
+  maxSanity: number;
+  hunger: number;     // 배고픔
+  maxHunger: number;
+  cash: Value[];
+  convertedMoney: number; // 환산 가치 (통화의 총합)
+}
+
+// 캐릭터 기본 정보
+export interface CharacterInfo {
+  name: string;           // 캐릭터 이름
+  age: number;         // 캐릭터 나이
+  sex: {
+    type: string,
+    enum: ["Male", "Female", "None"]
+  }; // 성별
+  height: number;         // 키 (cm)
+  weight: number;         // 몸무게 (kg)
+  race: {
+    type: string,
+    enum: ["Human", "Elf", "Dwarf", "Ain", "Preta", "Dragon", "Bird"] 
+  }; // 종족
+  background: {
+    type: string,
+    enum: ["Lower", "Commoner", "Middle", "Noble", "Royal"]
+  }; // 배경
+  origin: {
+    type: string,
+    enum: ["Aviarium", "Tirin", "Flusum", "Ulbua", "Bupoli"]
+  }; // 출신지
+
+
 }
 
 // 플레이어 주요 정보
 export interface Player {
   id: string;
-  name: string;
+  info: CharacterInfo;
   level: number;
   experience: number;
-  money: Value[];
-  convertedMoney: number; // 환산 가치 (통화의 총합)
-  reputation: number;
+  reputation: Reputation[]; // 평판
   expertise: CategoryExpertise;
-  contacts: Reputation[];
-  status: PlayerStatus;
+  status: CharacterStatus;
   daysPassed: number;     // 게임 내 경과 일수
   timerPreference: 'relaxed' | 'normal' | 'challenging'; // 경매 타이머 설정
 }
 
-// 플레이어 통계
-export interface PlayerStats {
+// 캐릭터 통계
+export interface Statistics {
   itemsAppraised: number;
   itemsSold: number;
   auctionsWon: number;

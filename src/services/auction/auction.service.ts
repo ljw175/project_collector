@@ -44,7 +44,7 @@ export class AuctionService {
     // 플레이어 참가자 객체 생성
     const playerParticipant: AuctionParticipant = { 
       id: player.id, 
-      name: player.name, 
+      name: player.info.name, 
       isPlayer: true 
     };
     

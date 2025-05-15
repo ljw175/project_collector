@@ -85,8 +85,8 @@ export function useMap() {
   const travelTo = useCallback((locationId: string): TravelResult => {
     // 플레이어 상태 가져오기 - Traveler 인터페이스 사용
     const traveler: Traveler = {
-      money: state.player.money || 1000,
-      fatigue: state.player.status.maxFatigue - (state.player.status.fatigue || 0), // 피로도의 반대값을 에너지로 사용
+      money: state.player.status.convertedMoney || 1000,
+      fatigue: state.player.status.maxFp - (state.player.status.fp || 0), // 피로도의 반대값을 에너지로 사용
       locationId: mapState.currentLocationId
     };
     
@@ -122,7 +122,7 @@ export function useMap() {
     );
     
     return result;
-  }, [mapState.currentLocationId, state.player.money, state.player.status.fatigue, state.player.status.maxFatigue, dispatch]);
+  }, [mapState.currentLocationId, state.player.status.convertedMoney, state.player.status.fp, state.player.status.maxFp, dispatch]);
 
   // 새 장소 발견 함수
   const discoverLocation = useCallback((locationId: string) => {

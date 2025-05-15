@@ -91,11 +91,11 @@ const LocationMarker: React.FC<{
 const TravelConfirmModal: React.FC<{
   locationName: string;
   cost: TravelCost;
-  playerMoney: number;
+  playerConvertedMoney: number;
   onConfirm: () => void;
   onCancel: () => void;
-}> = ({ locationName, cost, playerMoney, onConfirm, onCancel }) => {
-  const canAfford = playerMoney >= cost.money;
+}> = ({ locationName, cost, playerConvertedMoney, onConfirm, onCancel }) => {
+  const canAfford = playerConvertedMoney >= cost.money;
   
   return (
     <div className="modal-overlay">
@@ -112,7 +112,7 @@ const TravelConfirmModal: React.FC<{
           </div>
           <div className="cost-item">
             <span className="label">소요 시간:</span>
-            <span className="value">{cost.timeDays}일</span>
+            <span className="value">{cost.time}일</span>
           </div>
           <div className="cost-item">
             <span className="label">피로도 증가:</span>
@@ -338,7 +338,7 @@ const MapScreen: React.FC = () => {
         <TravelConfirmModal 
           locationName={selectedLocation.name}
           cost={activeTravelCost}
-          playerMoney={state.player.money || 0}
+          playerConvertedMoney={state.player.status.convertedMoney}
           onConfirm={handleTravel}
           onCancel={handleCancelTravel}
         />

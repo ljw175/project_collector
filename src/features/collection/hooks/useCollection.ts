@@ -57,8 +57,8 @@ export function useCollection() {
     // 참여 가능 여부 확인 (중앙화된 서비스 사용)
     if (!collectionService.canParticipateEvent(
         selectedEvent, 
-        state.player.convertedMoney, 
-        state.player.reputation
+        state.player.status.convertedMoney, 
+        state.player.reputation[0].relationshipLevel // 수정 필요
     )) {
       return false;
     }
@@ -131,8 +131,8 @@ export function useCollection() {
     // 서비스 레이어를 통한 참여 가능 여부 확인
     return collectionService.canParticipateEvent(
       selectedEvent,
-      state.player.convertedMoney,
-      state.player.reputation
+      state.player.status.convertedMoney,
+      state.player.reputation[0].relationshipLevel // 수정 필요
     );
   }, [selectedEvent, isCollecting, state.player]);
 

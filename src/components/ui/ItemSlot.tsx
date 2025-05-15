@@ -29,7 +29,7 @@ const ItemSlot: React.FC<ItemSlotProps> = ({
   // 태그 중 가장 희귀한 태그를 대표 태그로 표시
   const displayTag = appraised
     ? [...item.tags].sort((a, b) => {
-        const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
+        const rarityOrder = { 'One&Only': 5, 'epic': 4, 'rare': 3, 'uncommon': 2, 'common': 1 };
         return rarityOrder[b.rarity] - rarityOrder[a.rarity];
       })[0]
     : null;

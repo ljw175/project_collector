@@ -126,10 +126,10 @@ const MainGameScreen = () => {
         <div className="player-stats">
           <div className="stat" style={{ display: 'flex', alignItems: 'center' }}>
             <span style={{ marginRight: '4px' }}>💰</span>
-            <CurrencyDisplay values={state.player.money} size="large" />
+            <CurrencyDisplay values={state.player.status.cash} size="large" />
           </div>
-          <div className="stat">👑 명성 {state.player.reputation}</div>
-          <div className="stat">❤️ {formatHealth(state.player.status.health, state.player.status.maxHealth)}</div>
+          <div className="stat">👑 레벨 {state.player.level}</div>
+          <div className="stat">❤️ {formatHealth(state.player.status.hp, state.player.status.maxHp)}</div>
         </div>
       </header>
       

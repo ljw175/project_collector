@@ -16,7 +16,12 @@ export const initialPlayerState = {
   name: '',
   level: 1,
   experience: 0,
-  money: 500,
+  money: [
+    { currency: 'gold', amount: 0 }, 
+    { currency: 'silver', amount: 5 }, 
+    { currency: 'bronze', amount: 0 }
+  ], // 초기화 시 설정
+  convertedMoney: 500, // 환산 가치
   reputation: 0,
   expertise: {},
   contacts: [],

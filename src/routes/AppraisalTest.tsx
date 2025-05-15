@@ -145,7 +145,7 @@ const AppraisalTest: React.FC = () => {
         <Link to="/dev" className="back-button">← 테스트 메뉴로</Link>
         <h1>감정 시스템 테스트</h1>
         <div className="player-stats">
-          <span className="stats">소지금: <CurrencyDisplay values={state.player.money} size="medium" /></span>
+          <span className="stats">소지금: <CurrencyDisplay values={state.player.status.cash} size="medium" /></span>
           <span>감정 포인트: {player.appraisalPoints}/3</span>
           <button className="btn btn-sm" onClick={resetPoints}>포인트 충전</button>
         </div>

@@ -5,6 +5,7 @@ import { createContext, useContext, useMemo, useReducer } from 'react';
 import { GameState, GameSettings } from '@models/game';
 import { GameAction } from './actionTypes';
 import { ValueCurrencies } from '@/data/items/common-items';
+import { initialPlayerState } from '@/data/constants/game-constants';
 
 // 초기 게임 설정
 const initialGameSettings: GameSettings = {
@@ -21,24 +22,27 @@ const initialGameSettings: GameSettings = {
 const initialGameState: GameState = {
   player: {
     id: '',
-    name: '',
+    info: {} as any, // 초기화 시 설정
     level: 1,
     experience: 0,
-    money: ValueCurrencies.map(currency => ({
-      currency: currency,
-      amount: 0
-    })),
-    convertedMoney: 0, // 환산 가치
-    reputation: 0,
+    reputation: [],
     expertise: {} as any, // 초기화 시 설정
-    contacts: [],
     status: {
-      health: 100,
-      mental: 100,
-      fatigue: 0,
-      maxHealth: 100,
-      maxMental: 100,
-      maxFatigue: 100
+      hp: 100,
+      maxHp: 100,
+      mp: 100,
+      maxMp: 100,
+      fp: 0,
+      maxFp: 100,
+      sanity: 100,
+      maxSanity: 100,
+      hunger: 100,
+      maxHunger: 100,
+      cash: ValueCurrencies.map(currency => ({
+        currency: currency,
+        amount: 0
+      })),
+      convertedMoney: 0 // 환산 가치
     },
     daysPassed: 0,
     timerPreference: 'normal'
@@ -64,7 +68,10 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         player: {
           ...state.player,
-          name: action.payload
+          info: {
+            ...state.player.info,
+            name: action.payload
+          }
         }
       };
     
@@ -91,9 +98,12 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         player: {
           ...state.player,
-          money: state.player.money.map((m, index) => 
-            index === action.payload[index].amount ? { ...m, amount: m.amount + action.payload[index].amount } : m
-          )
+          status: {
+            ...state.player.status,
+            cash: state.player.status.cash.map((m, index) => 
+              index === action.payload[index].amount ? { ...m, amount: m.amount + action.payload[index].amount } : m
+            )
+          }
         }
       };
     
@@ -132,8 +142,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         player: {
           ...state.player,
-          reputation: state.player.reputation + repAmount,
-          contacts: state.player.contacts.map(contact => 
+          reputation: state.player.reputation.map(contact => 
             contact.id === contactId
               ? { ...contact, reputationScore: contact.reputationScore + repAmount }
               : contact

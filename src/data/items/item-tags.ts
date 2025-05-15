@@ -49,12 +49,12 @@ export const itemTags: ItemTag[] = [
     isHidden: false
   },
   {
-    id: 'legendary',
-    name: '전설적인',
-    description: '전설로 전해지는 매우 희귀한 물건입니다.',
-    rarity: 'legendary',
+    id: 'One&Only',
+    name: '유일무이한',
+    description: '세상에 단 하나뿐인 물건입니다.',
+    rarity: 'One&Only',
     valueMultiplier: 5.0,
-    icon: '/assets/icons/tags/legendary.svg',
+    icon: '/assets/icons/tags/one-only.svg',
     color: '#ff9800',
     isHidden: false
   },

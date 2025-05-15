@@ -1,5 +1,5 @@
 import React from 'react';
-import { Value, ValueCurrency } from '@models/item';
+import { Value } from '@models/item';
 import './CurrencyDisplay.css';
 
 interface CurrencyDisplayProps {

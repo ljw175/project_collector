@@ -7,7 +7,7 @@ export type ItemTag = {
   id: string;
   name: string;
   description: string;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'One&Only';
   valueMultiplier: number;  // 가치에 영향을 미치는 승수
   icon: string;            // 태그 아이콘 경로
   color: string;           // 태그 색상 
