@@ -54,15 +54,34 @@ export interface Auction {
   timePerRound: number; // 라운드당 시간
 }
 
+export interface DifficultySettings {
+  easy:{
+    id: string;
+    startingMoney: number;
+    reputationGain: number;
+    prices: number;
+    rareItemChance: number;
+    adaptiveTextSpeed: boolean;
+    adaptiveTimer: boolean;
+  },
+  hard:{
+    id: string;
+    startingMoney: number;
+    reputationGain: number;
+    prices: number;
+    rareItemChance: number;
+    adaptiveTextSpeed: boolean;
+    adaptiveTimer: boolean;
+  }
+}
+
 // 게임 설정
 export interface GameSettings {
-  difficulty: 'easy' | 'normal' | 'hard';
+  difficulty: DifficultySettings[keyof DifficultySettings];
   enableTutorial: boolean;
   soundVolume: number;
   musicVolume: number;
-  textSpeed: number;
-  adaptiveTimer: boolean;
-  timerDuration: number;
+  textSpeed?: number; // 난이도가 쉬움일때만 텍스트 속도 설정 가능
 }
 
 // 게임 진행 상태
