@@ -4,7 +4,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useGameState } from '@store/gameContext';
 import { ItemCategory } from '@models/item';
-import { ExpertiseLevel } from '@models/player';
+import { ExpertiseLevel } from '@/models/character';
 import { 
   ExpertiseSkill, 
   ReputationEvent,

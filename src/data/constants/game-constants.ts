@@ -2,6 +2,13 @@
  * 게임 전체에서 사용되는 기본 상수값 정의
  */
 
+import { 
+  CharacterSexEnum, 
+  CharacterRaceEnum, 
+  CharacterBackgroundEnum, 
+  CharacterOriginEnum 
+} from '@/data/constants/character-constants';
+
 // 난이도 설정
 export const difficultySettings = {
   easy: {
@@ -21,7 +28,7 @@ export const difficultySettings = {
     rareItemChance: 1.0,
     adaptiveTextSpeed: true, // Reality 난이도에서 true
     adaptiveTimer: true, // Reality 난이도에서 true
-  }
+  },
 };
 
 // 게임 초기 설정
@@ -36,12 +43,20 @@ export const initialGameSettings = {
 // 초기 플레이어 상태
 export const initialPlayerState = {
   id: '',
-  name: '',
+  info: { 
+        name: '', 
+        age: 0, 
+        sex: { type: CharacterSexEnum.NONE, enum: CharacterSexEnum },
+        height: 0,
+        weight: 0,
+        race: { type: CharacterRaceEnum.NONE, enum: CharacterRaceEnum },
+        background: { type: CharacterBackgroundEnum.NONE, enum: CharacterBackgroundEnum },
+        origin: { type: CharacterOriginEnum.NONE, enum: CharacterOriginEnum },
+      },
   level: 1,
   experience: 0,
-  reputation: 0,
+  reputation: [],
   expertise: {},
-  contacts: [],
   status: {
     hp: 100,
     mp: 100,
@@ -59,6 +74,7 @@ export const initialPlayerState = {
       { currency: 'bronze', amount: 0 }
     ], // 초기화 시 설정
     convertedMoney: 0, // 환산 가치
+    influence: [],
   },
   daysPassed: 0,
   timerPreference: 'normal'

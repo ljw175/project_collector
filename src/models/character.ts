@@ -1,9 +1,16 @@
 /**
- * 플레이어 관련 타입 정의
+ * 캐릭터 관련 타입 정의
  */
 import { ItemCategory, Value } from './item';
+import { 
+  CharacterSexEnum, 
+  CharacterRaceEnum, 
+  CharacterBackgroundEnum, 
+  CharacterOriginEnum, 
+  CharacterPersonalityEnum
+} from '../../src/data/constants/character-constants';
 
-// 전문성 레벨 (각 카테고리별 플레이어 전문 지식)
+// 전문성 레벨 (각 카테고리별 캐릭터 전문 지식)
 export enum ExpertiseLevel {
   BEGINNER = 0,      // 초보자
   AMATEUR = 1,     // 아마추어
@@ -41,6 +48,13 @@ export interface Reputation {
   nextLevelThreshold: number;
 }
 
+// 캐릭터 영향력
+export interface CharacterInfluence {
+  influence: number; // 영향력 (명성 - 은폐된 명성)
+  fame: number;      // 명성
+  veil: number;      // 베일 (은폐된 명성)
+}
+
 // 캐릭터 상태
 export interface CharacterStatus {
   hp: number;          // 체력
@@ -55,6 +69,7 @@ export interface CharacterStatus {
   maxHunger: number;
   cash: Value[];
   convertedMoney: number; // 환산 가치 (통화의 총합)
+  influence: CharacterInfluence[]; // 영향력
 }
 
 // 캐릭터 기본 정보
@@ -63,24 +78,31 @@ export interface CharacterInfo {
   age: number;         // 캐릭터 나이
   sex: {
     type: string,
-    enum: ["Male", "Female", "None"]
+    enum: typeof CharacterSexEnum
   }; // 성별
   height: number;         // 키 (cm)
   weight: number;         // 몸무게 (kg)
   race: {
     type: string,
-    enum: ["Human", "Elf", "Dwarf", "Ain", "Preta", "Dragon", "Bird"] 
+    enum: typeof CharacterRaceEnum
   }; // 종족
   background: {
     type: string,
-    enum: ["Lower", "Commoner", "Middle", "Noble", "Royal"]
+    enum: typeof CharacterBackgroundEnum
   }; // 배경
   origin: {
     type: string,
-    enum: ["Aviarium", "Tirin", "Flusum", "Ulbua", "Bupoli"]
+    enum: typeof CharacterOriginEnum
   }; // 출신지
-
-
+  personality?: {
+    type: string,
+    enum: typeof CharacterPersonalityEnum
+  }; // 성격
+  history?: string;    // 이력
+  image?: string;      // 캐릭터 이미지 경로
+  description?: string; // 캐릭터 설명
+  faction?: string;    // 소속 세력
+  hobbies?: string[]; // 취미
 }
 
 // 플레이어 주요 정보
@@ -93,7 +115,18 @@ export interface Player {
   expertise: CategoryExpertise;
   status: CharacterStatus;
   daysPassed: number;     // 게임 내 경과 일수
-  timerPreference: 'relaxed' | 'normal' | 'challenging'; // 경매 타이머 설정
+}
+
+// NPC 주요 정보
+export interface NPC {
+  id: string;
+  info: CharacterInfo;
+  level: number;
+  experience: number;
+  reputation: Reputation[]; // 평판
+  expertise: CategoryExpertise;
+  status: CharacterStatus;
+  daysPassed: number;     // 게임 내 경과 일수
 }
 
 // 캐릭터 통계

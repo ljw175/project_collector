@@ -2,7 +2,7 @@
  * 전문성(Expertise) 관련 타입 정의
  */
 import { ItemCategory } from '@models/item';
-import { ExpertiseLevel, Reputation } from '@models/player';
+import { ExpertiseLevel, Reputation } from '@/models/character';
 
 // 전문성 스킬 정의
 export interface ExpertiseSkill {

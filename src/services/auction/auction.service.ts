@@ -3,7 +3,7 @@
  * 경매 데이터 접근과 입찰 로직을 관리합니다.
  */
 import { Item } from '@models/item';
-import { Player } from '@models/player';
+import { Player } from '@/models/character';
 import { 
   AuctionItem, 
   AuctionParticipant, 

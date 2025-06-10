@@ -6,7 +6,7 @@ import { useExpertise } from '../hooks/useExpertise';
 import { useGameState } from '@store/gameContext';
 import { ExpertiseSkill } from '../types/expertise_types';
 import { ItemCategory } from '@models/item';
-import { ExpertiseLevel, Reputation } from '@models/player';
+import { ExpertiseLevel, Reputation } from '@/models/character';
 
 // 카테고리 라벨 매핑
 const categoryLabels: Record<ItemCategory, string> = {
@@ -389,7 +389,7 @@ const ExpertiseScreen: React.FC = () => {
             <span className="value">{state.player.experience}</span>
           </div>
           <div className="stat">
-            <span className="label">평판:</span>
+            <span className="label">영향력:</span>
             <span className="value">{state.player.reputation}</span>
           </div>
         </div>

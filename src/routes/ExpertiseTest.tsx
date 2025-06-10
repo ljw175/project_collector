@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import '../styles/components.css';
 import '../styles/expertise-test.css';
 import { useExpertise } from '../features/expertise/hooks/useExpertise';
-import { ExpertiseLevel } from '../models/player';
+import { ExpertiseLevel } from '../models/character';
 import { ExpertiseSkill } from '../features/expertise/types/expertise_types';
 import { ItemCategory } from '../models/item';
 import { expertiseService } from '../services/expertise/expertise_service_index';

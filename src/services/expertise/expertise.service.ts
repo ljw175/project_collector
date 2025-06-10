@@ -22,7 +22,7 @@ import {
   getEventById 
 } from '@/data/expertise/events.ts';
 import { ItemCategory } from '@models/item';
-import { ExpertiseLevel, Reputation } from '@models/player';
+import { ExpertiseLevel, Reputation } from '@/models/character';
 import { ExpertiseSkill, ReputationEvent } from '@features/expertise/types/expertise_types';
 
 /**

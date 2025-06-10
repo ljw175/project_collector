@@ -6,7 +6,7 @@ import { GameState, GameSettings, CalendarEvent } from '@models/game';
 import { AppraisedItem, UnappraisedItem, ItemCategory, ItemTag, isAppraised, Value } from '@/models/item'; // Value 추가
 import { GameAction } from './actionTypes';
 import { initialPlayerState as constantInitialPlayer, initialGameSettings as constantInitialSettings } from '@/data/constants/game-constants';
-import { CategoryExpertise, CharacterInfo, Reputation } from '@/models/player'; // CharacterInfo, Reputation 추가
+import { CategoryExpertise, CharacterInfo, Reputation } from '@/models/character'; // CharacterInfo, Reputation 추가
 import { getTagById } from '@/data/items/item-tags';
 import { ValueCurrencies } from '@/data/items/common-items'; // ValueCurrencies 추가
 
@@ -14,20 +14,20 @@ import { ValueCurrencies } from '@/data/items/common-items'; // ValueCurrencies 
 // 초기 게임 상태 (새 게임 시작용)
 const initialGameState: GameState = {
   player: {
-    id: constantInitialPlayer.id || '', // game-constants에서 가져옴
-    info: { // CharacterInfo 타입에 맞게 확장
-      name: constantInitialPlayer.name || '', // game-constants에서 가져옴
-      age: 0, // 기본값 또는 다른 소스에서
-      sex: { type: "None", enum: ["Male", "Female", "None"] }, // 기본값
-      height: 0, // 기본값
-      weight: 0, // 기본값
-      race: { type: "Human", enum: ["Human", "Elf", "Dwarf", "Ain", "Preta", "Dragon", "Bird"] }, // 기본값
-      background: { type: "Commoner", enum: ["Lower", "Commoner", "Middle", "Noble", "Royal"] }, // 기본값
-      origin: { type: "Tirin", enum: ["Aviarium", "Tirin", "Flusum", "Ulbua", "Bupoli"] }, // 기본값
+    id: constantInitialPlayer.id, 
+    info: { // CharacterInfo 타입에 맞게 확장, game-constants에서 가져옴
+      name: constantInitialPlayer.info.name, 
+      age: constantInitialPlayer.info.age, 
+      sex: constantInitialPlayer.info.sex, 
+      height: constantInitialPlayer.info.height,
+      weight: constantInitialPlayer.info.weight,
+      race: constantInitialPlayer.info.race,
+      background: constantInitialPlayer.info.background,
+      origin: constantInitialPlayer.info.origin,
     } as CharacterInfo,
-    level: constantInitialPlayer.level, // game-constants에서 가져옴
-    experience: constantInitialPlayer.experience, // game-constants에서 가져옴
-    reputation: [], // Reputation[] 타입이므로 빈 배열로 시작, game-constants의 reputation(number)은 다른 방식으로 활용하거나 무시
+    level: constantInitialPlayer.level,
+    experience: constantInitialPlayer.experience,
+    reputation: [], // Reputation[] 타입이므로 빈 배열로 시작
     expertise: Object.values(ItemCategory).reduce((acc, category) => { // ItemCategory 기반으로 초기화
       acc[category] = { level: 0, experience: 0, nextLevelThreshold: 100 };
       return acc;
@@ -51,10 +51,10 @@ const initialGameState: GameState = {
           amount: m.amount
         } as Value;
       }),
-      convertedMoney: constantInitialPlayer.status.convertedMoney, 
+      convertedMoney: constantInitialPlayer.status.convertedMoney,
+      influence: constantInitialPlayer.status.influence, // 영향력 필드 추가
     },
     daysPassed: constantInitialPlayer.daysPassed, 
-    timerPreference: constantInitialPlayer.timerPreference as 'relaxed' | 'normal' | 'challenging', // 타입 단언
   },
   inventory: [],
   locations: [],

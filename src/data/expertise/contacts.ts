@@ -2,7 +2,7 @@
  * 전문성 시스템의 연락처(Contacts) 데이터
  */
 import { ItemCategory } from '@models/item';
-import { Reputation } from '@models/player';
+import { Reputation } from '@/models/character';
 
 /**
  * 게임 내 연락처 데이터

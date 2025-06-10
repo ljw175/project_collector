@@ -3,6 +3,6 @@
  */
 export * from './game';
 export * from './item';
-export * from './player';
+export * from './character';
 
 // 추가 모델이 있으면 여기서 내보냅니다.

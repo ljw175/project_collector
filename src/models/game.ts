@@ -2,7 +2,7 @@
  * 게임 상태 관련 타입 정의
  */
 import { Item } from './item';
-import { Player } from './player';
+import { Player } from './character';
 
 // 게임 위치 정보
 export interface Location {
@@ -55,7 +55,7 @@ export interface Auction {
 }
 
 export interface DifficultySettings {
-  easy:{
+  difficult:{
     id: string;
     startingMoney: number;
     reputationGain: number;
@@ -63,16 +63,7 @@ export interface DifficultySettings {
     rareItemChance: number;
     adaptiveTextSpeed: boolean;
     adaptiveTimer: boolean;
-  },
-  hard:{
-    id: string;
-    startingMoney: number;
-    reputationGain: number;
-    prices: number;
-    rareItemChance: number;
-    adaptiveTextSpeed: boolean;
-    adaptiveTimer: boolean;
-  }
+  };
 }
 
 // 게임 설정

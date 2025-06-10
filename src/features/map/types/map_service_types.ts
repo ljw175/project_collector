@@ -1,7 +1,7 @@
 /**
  * 지도(Map) 관련 인터페이스
  */
-import { Player } from '@models/player';
+import { Player } from '@/models/character';
 
 // 여행자 상태 인터페이스 (MapService 전용)
 export interface Traveler {

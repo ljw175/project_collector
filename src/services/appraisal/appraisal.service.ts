@@ -3,7 +3,7 @@
  * 아이템 감정 로직과 결과 계산을 관리합니다.
  */
 import { Item, ItemTag, ItemCategory, ValueCurrency } from '@models/item';
-import { Player, ExpertiseLevel } from '@models/player';
+import { Player, ExpertiseLevel } from '@/models/character';
 import { 
   AppraisalOptions, 
   AppraisalResult 
